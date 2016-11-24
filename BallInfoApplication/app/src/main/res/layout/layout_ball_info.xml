@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="本期号码："
+            android:textColor="@color/black_gray"
+            android:textSize="18dp" />
+
+        <TextView
+            android:id="@+id/text_ball_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="（开奖日期：xxxx-xx-xx(周x)）"
+            android:textColor="@color/light_gray"
+            android:textSize="14dp" />
+    </LinearLayout>
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycle_red_ball"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp" />
+
+    <TextView
+        android:id="@+id/text_blue_ball_number"
+        style="@style/BallTextStyle"
+        android:layout_marginLeft="25dp"
+        android:background="@drawable/blue_ball_bg" />
+
+    <TextView
+        android:id="@+id/text_next_"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="18dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="18dp"
+        android:background="@drawable/shape_green_r5"
+        android:gravity="center"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        android:text="分析下期号码"
+        android:textColor="@color/white"
+        android:textSize="18dp" />
+</LinearLayout>
