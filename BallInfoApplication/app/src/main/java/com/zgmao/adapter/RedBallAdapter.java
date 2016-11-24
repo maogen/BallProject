@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.View;
 
 import com.maf.adapter.BaseRecycleAdapter;
+import com.maf.utils.NumberUtils;
 
 import java.util.List;
 
@@ -37,6 +38,6 @@ public class RedBallAdapter extends BaseRecycleAdapter<Integer, RedBallHolder> {
 
     @Override
     public void onBindViewHolder(RedBallHolder holder, int position) {
-        holder.textBallNumber.setText(String.valueOf(list.get(position)));
+        holder.textBallNumber.setText(NumberUtils.intTo2Dec(list.get(position)));
     }
 }

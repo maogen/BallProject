@@ -3,6 +3,7 @@ package com.zgmao.activity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.gson.reflect.TypeToken;
@@ -10,6 +11,7 @@ import com.maf.git.GsonUtils;
 import com.maf.net.XAPIServiceListener;
 import com.maf.utils.BaseToast;
 import com.maf.utils.LogUtils;
+import com.maf.utils.NumberUtils;
 import com.zgmao.adapter.RedBallAdapter;
 import com.zgmao.bean.Ball;
 import com.zgmao.utils.RequestUtils;
@@ -17,9 +19,10 @@ import com.zgmao.utils.RequestUtils;
 import zgmao.com.ballinfo.R;
 
 public class MainActivity extends BaseTitleActivity {
-    private TextView textBallDate;// 日期
-    private RecyclerView recyclerView;// 红球
-    private TextView textBlueBall;// 蓝球
+    private TextView textBallDate;// 显示日期
+    private RecyclerView recyclerView;// 显示红球
+    private TextView textBlueBall;// 显示蓝球
+    private Button btnNext;// 下期预测
     private Ball ball;
 
     @Override
@@ -47,11 +50,12 @@ public class MainActivity extends BaseTitleActivity {
         textBallDate = (TextView) findViewById(R.id.text_ball_date);
         recyclerView = (RecyclerView) findViewById(R.id.recycle_red_ball);
         textBlueBall = (TextView) findViewById(R.id.text_blue_ball_number);
+        btnNext = (Button) findViewById(R.id.btn_next_calculate);
     }
 
     @Override
     protected void initEvent() {
-
+        btnNext.setOnClickListener(this);
     }
 
     @Override
@@ -62,7 +66,13 @@ public class MainActivity extends BaseTitleActivity {
 
     @Override
     public void onClick(View v) {
-
+        switch (v.getId()) {
+            case R.id.btn_next_calculate:
+                // 下期预测
+                break;
+            default:
+                break;
+        }
     }
 
     /**
@@ -72,10 +82,12 @@ public class MainActivity extends BaseTitleActivity {
         if (ball == null) {
             textBlueBall.setVisibility(View.GONE);
             textBallDate.setVisibility(View.GONE);
+            btnNext.setVisibility(View.GONE);
             return;
         }
         titleBarView.setTitle(ball.getBallNumber());
         textBallDate.setText(ball.getBallDate());
+        textBallDate.setVisibility(View.VISIBLE);
         // 设置红球
         RedBallAdapter adapter = new RedBallAdapter(this, ball.getRedNumber());
         LinearLayoutManager manager = new LinearLayoutManager(this);
@@ -85,7 +97,9 @@ public class MainActivity extends BaseTitleActivity {
         recyclerView.getAdapter().notifyDataSetChanged();
         // 设置篮球
         textBlueBall.setVisibility(View.VISIBLE);
-        textBlueBall.setText(String.valueOf(ball.getBlueNumber()));
+        textBlueBall.setText(NumberUtils.intTo2Dec(ball.getBlueNumber()));
+        // 显示下期按钮
+        btnNext.setVisibility(View.VISIBLE);
     }
 
     /**

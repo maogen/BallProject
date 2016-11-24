@@ -19,7 +19,7 @@ import zgmao.com.ballinfo.R;
  * 修改备注：
  */
 
-public abstract class BaseTitleActivity extends BaseCustomSwipeRefreshActivity implements View.OnClickListener {
+public abstract class BaseTitleActivity extends BaseCustomSwipeRefreshActivity {
     protected TitleBarView titleBarView;
 
     @Override
