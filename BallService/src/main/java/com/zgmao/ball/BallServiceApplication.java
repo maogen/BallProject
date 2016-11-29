@@ -10,8 +10,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication
 @EnableAutoConfiguration
 @ComponentScan(value = { "com.zgmao.controller" })
-//@EnableJpaRepositories("com.zgmao.tableImpl")
-//@EntityScan("com.zgmao.table")
+@EnableJpaRepositories("com.zgmao.tableImpl")
+@EntityScan("com.zgmao.table")
 public class BallServiceApplication {
 
 	public static void main(String[] args) {

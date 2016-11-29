@@ -110,6 +110,10 @@ public class Ball {
 	}
 
 	public WinInfo getFirstInfo() {
+		if (firstInfo == null) {
+			firstInfo = new WinInfo();
+			firstInfo.setTitle("一等奖");
+		}
 		return firstInfo;
 	}
 
@@ -118,12 +122,15 @@ public class Ball {
 	}
 
 	public WinInfo getSecondInfo() {
+		if (secondInfo == null) {
+			secondInfo = new WinInfo();
+			secondInfo.setTitle("二等奖");
+		}
 		return secondInfo;
 	}
 
 	public void setSecondInfo(WinInfo secondInfo) {
 		this.secondInfo = secondInfo;
 	}
-	
 
 }

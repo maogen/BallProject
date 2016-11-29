@@ -1,5 +1,8 @@
 package com.zgmao.table;
 
+import java.io.Serializable;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -8,14 +11,20 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "history")
-public class TBall {
+public class TBall implements Serializable {
+	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
+	@Column
 	private String number;// 期号
+	@Column
 	private String ballDate;// 日期
+	@Column
 	private String red;// 红色号码用,隔开
+	@Column
 	private Integer blue;
+	
 	private String winInfo;// 获奖信息
 
 	public Long getId() {

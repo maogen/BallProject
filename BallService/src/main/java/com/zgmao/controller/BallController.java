@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.google.gson.Gson;
 import com.zgmao.table.TBall;
 import com.zgmao.tableImpl.TBallDao;
+import com.zgmao.utils.Lg;
+import com.zgmao.utils.NumberUtils;
 import com.zgmao.utils.RequestUtil;
 import com.zgmao.utils.StringUtils;
 import com.zgmao.vo.Ball;
@@ -21,6 +23,11 @@ import com.zgmao.vo.WinInfo;
 @RestController
 @RequestMapping("/api/ball")
 public class BallController {
+	/**
+	 * 数据库操作
+	 */
+	@Autowired
+	private TBallDao tBallDao;
 
 	@GetMapping("/index")
 	public String index() {
@@ -28,7 +35,7 @@ public class BallController {
 	}
 
 	/**
-	 * 获取双色球内容
+	 * 获取最新一期双色球内容，并且插入数据库中
 	 * 
 	 * @return
 	 */
@@ -87,16 +94,18 @@ public class BallController {
 			String info = matcher.group().replaceAll("</p>", "");
 			ball.addWinInfo(info);
 		}
+		// 将数据插入到数据库中
+		insertVo(getTableVoByView(ball));
 		return new Gson().toJson(ball);
 	}
 
 	/**
-	 * 得到历史记录
+	 * 得到历史记录，并且插入到数据库
 	 * 
 	 * @return
 	 */
-	@GetMapping("/getHistory")
-	public List<Ball> getHistoryBall() {
+	@GetMapping("/insertHistory")
+	public List<Ball> insertHistoryBall() {
 		Pattern pattern;
 		Matcher matcher;
 		// 搜索双色球
@@ -192,23 +201,172 @@ public class BallController {
 				}
 			}
 		}
-		// if (ballList != null) {
-		// int size = ballList.size();
-		// for (int i = 0; i < size; i++) {
-		// daoImpl.save(ballList.get(i));
-		// }
-		// }
+		// 将数据插入到数据库中
+		insertListVo(ballList);
 		return ballList;
 	}
 
-	// @Autowired
-	// TBallDao tBallDao;
-	//
-	// @GetMapping("/select")
-	// public String getSelect() {
-	// TBall tball = tBallDao.findBall("2016123");
-	// return new Gson().toJson(tball);
-	// }
-	// @Autowired
-	// private TBallDaoImpl daoImpl;
+	/**
+	 * 从数据中查找全部历史记录
+	 * 
+	 * @return
+	 */
+	@GetMapping("/getHistory")
+	public List<Ball> getHistoryByDB() {
+		List<TBall> tBalls = (List<TBall>) tBallDao.findAll();
+		List<Ball> ballList = new ArrayList<>();
+		if (tBalls != null) {
+			for (TBall tBall : tBalls) {
+				Ball item = getViewByTableVo(tBall);
+				if (item != null) {
+					ballList.add(item);
+				}
+			}
+		}
+		return ballList;
+	}
+
+	/**
+	 * 将列表插入到数据库
+	 * 
+	 * @param ballList
+	 */
+	private void insertListVo(List<Ball> ballList) {
+		if (ballList == null) {
+			return;
+		}
+		int size = ballList.size();
+		for (int i = 0; i < size; i++) {
+			TBall tBall = getTableVoByView(ballList.get(i));
+			insertVo(tBall);
+		}
+	}
+
+	/**
+	 * 插入实体类
+	 * 
+	 * @param tBall
+	 */
+	private void insertVo(TBall tBall) {
+		if (tBall == null) {
+			return;
+		}
+		List<TBall> existList = tBallDao.findByNumber(tBall.getNumber());
+		if (existList != null && existList.size() > 0) {
+			Lg.d("该期号已经存在，不插入");
+		} else {
+			tBallDao.save(tBall);
+		}
+	}
+
+	/**
+	 * 将从网站解析得到的实体类，转成数据库实体类
+	 * 
+	 * @param ball
+	 * @return
+	 */
+	private TBall getTableVoByView(Ball ball) {
+		if (ball == null) {
+			return null;
+		}
+		TBall tBall = new TBall();
+		tBall.setNumber(ball.getBallNumber());
+		tBall.setBallDate(ball.getBallDate());
+
+		List<Integer> redNum = ball.getRedNumber();
+		if (redNum != null) {
+			StringBuilder sbBuilder = new StringBuilder();
+			int size = redNum.size();
+			for (int i = 0; i < size; i++) {
+				if (i < size - 1) {
+					sbBuilder.append(redNum.get(i)).append(",");
+				} else {
+					sbBuilder.append(redNum.get(i));
+				}
+			}
+			tBall.setRed(sbBuilder.toString());
+		}
+
+		tBall.setBlue(ball.getBlueNumber());
+		WinInfo first = ball.getFirstInfo();
+		WinInfo second = ball.getSecondInfo();
+
+		StringBuilder sbInfo = new StringBuilder();
+		if (first != null) {
+			sbInfo.append(first.getTitle() + "，共" + first.getWinCount() + "注，每注"
+					+ first.getMoney() + "；");
+		}
+		if (second != null) {
+			sbInfo.append(second.getTitle() + "，共" + second.getWinCount()
+					+ "注，每注" + second.getMoney());
+		}
+		tBall.setWinInfo(sbInfo.toString());
+
+		return tBall;
+	}
+
+	/**
+	 * 将数据库实体类，转成从网站解析得到的实体类
+	 * 
+	 * @param tBall
+	 * @return
+	 */
+	private Ball getViewByTableVo(TBall tBall) {
+		if (tBall == null) {
+			return null;
+		}
+		Ball ball = new Ball();
+		ball.setBallDate(tBall.getBallDate());
+		ball.setBallNumber(tBall.getNumber());
+		ball.setBlueNumber(tBall.getBlue());
+		// 处理红球
+		String redStr = tBall.getRed();
+		String[] redStrArray = redStr.split(",");
+		int length = redStrArray.length;
+		for (int i = 0; i < length; i++) {
+			ball.addRedNumber(Integer.valueOf(redStrArray[i]));
+		}
+		// 处理获奖信息
+		String winInfo = tBall.getWinInfo();
+		String[] infoArray = winInfo.split("；");
+		for (int i = 0; i < infoArray.length; i++) {
+			Pattern pattern = Pattern.compile("\\d+");
+			Matcher matcher = pattern.matcher(infoArray[i]);
+			int countIndex = 0;
+			WinInfo winInfo2 = new WinInfo();
+			while (matcher.find()) {
+				if (countIndex == 0) {
+					// 第一次扫描到整数，是注数
+					winInfo2.setWinCount(Integer.valueOf(matcher.group()));
+				} else if (countIndex == 1) {
+					// 第二次扫描到整数，是每注奖金
+					winInfo2.setMoney(Integer.valueOf(matcher.group()));
+				}
+				countIndex++;
+			}
+			if (i == 0) {
+				// 一等奖
+				winInfo2.setTitle("一等奖");
+				ball.setFirstInfo(winInfo2);
+			} else if (i == 1) {
+				// 二等奖
+				winInfo2.setTitle("二等奖");
+				ball.setSecondInfo(winInfo2);
+			}
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append("本期").append(ball.getFirstInfo().getTitle()).append("：")
+				.append(ball.getFirstInfo().getWinCount()).append("注，每注")
+				.append(NumberUtils
+						.format3DotNumber(ball.getFirstInfo().getMoney()))
+				.append("元\n").append("本期")
+				.append(ball.getSecondInfo().getTitle()).append("：")
+				.append(ball.getSecondInfo().getWinCount()).append("注，每注")
+				.append(NumberUtils
+						.format3DotNumber(ball.getSecondInfo().getMoney()))
+				.append("元");
+		ball.setWinInfo(sb.toString());
+		return ball;
+	}
+
 }
