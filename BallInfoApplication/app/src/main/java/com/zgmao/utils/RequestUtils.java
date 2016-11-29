@@ -14,8 +14,9 @@ import com.maf.net.XBaseAPIUtils;
  */
 
 public class RequestUtils {
-    public static String url = "http://192.168.1.178:9001";
-    public static String action_info = "/api/ball/getBall";
+    public static String url = "http://192.168.1.179:9001";
+    public static String action_info = "/api/ball/getBall";// 获取最近一期号码
+    public static String action_history = "/api/ball/getHistory";// 获取历史号码
 
     /**
      * 请求双色球信息
@@ -24,5 +25,14 @@ public class RequestUtils {
      */
     public static void getBallMsg(XAPIServiceListener listener) {
         XBaseAPIUtils.baseGet(url, action_info, null, null, listener);
+    }
+
+    /**
+     * 请求历史信息
+     *
+     * @param listener 监听器
+     */
+    public static void getHistory(XAPIServiceListener listener) {
+        XBaseAPIUtils.baseGet(url, action_history, null, null, listener);
     }
 }

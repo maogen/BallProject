@@ -126,3 +126,15 @@ action:
 12,345,676
 1,234
 123
+url:http://www.baidu.com.cn/s?wd=双色球
+action:
+url:http://www.baidu.com.cn/s?wd=双色球
+action:
+该期号已经存在，不插入
+该期号已经存在，不插入
+url:http://www.baidu.com.cn/s?wd=双色球
+action:
+该期号已经存在，不插入
+url:http://www.baidu.com.cn/s?wd=双色球
+action:
+该期号已经存在，不插入

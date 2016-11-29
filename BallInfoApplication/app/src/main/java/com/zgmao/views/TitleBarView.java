@@ -23,6 +23,7 @@ import zgmao.com.ballinfo.R;
 public class TitleBarView extends RelativeLayout implements View.OnClickListener {
     private ImageView imageBack;// 返回按钮
     private TextView textTitle;// 标题
+    private TextView textTitleRight;// 右边文字
 
     public TitleBarView(Context context) {
         super(context);
@@ -39,6 +40,7 @@ public class TitleBarView extends RelativeLayout implements View.OnClickListener
     protected void onFinishInflate() {
         imageBack = (ImageView) findViewById(R.id.image_title_back);
         textTitle = (TextView) findViewById(R.id.text_product_title);
+        textTitleRight = (TextView) findViewById(R.id.text_title_right);
         // 设置点击事件
         imageBack.setOnClickListener(this);
         super.onFinishInflate();
@@ -53,6 +55,18 @@ public class TitleBarView extends RelativeLayout implements View.OnClickListener
         if (!isShow) {
             imageBack.setVisibility(View.GONE);
         }
+    }
+
+    /**
+     * 设置右边文字按钮信息（R.id.text_title_right）
+     *
+     * @param text            需要显示的文字
+     * @param onClickListener 点击监听器
+     */
+    public void setTitleRight(String text, OnClickListener onClickListener) {
+        textTitleRight.setVisibility(View.VISIBLE);
+        textTitleRight.setText(text);
+        textTitleRight.setOnClickListener(onClickListener);
     }
 
     /**

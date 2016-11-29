@@ -17,4 +17,10 @@
         style="@style/TitleTextStyle"
         android:layout_centerHorizontal="true" />
 
+    <!-- 右边按钮 -->
+    <TextView
+        android:id="@+id/text_title_right"
+        style="@style/TitleIconRightStyle"
+        android:text="历史号码"
+        android:visibility="gone" />
 </com.zgmao.views.TitleBarView>

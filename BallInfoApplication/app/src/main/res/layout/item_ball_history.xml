@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/text_ball_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="本期号码  "
+            android:textColor="@color/black_gray"
+            android:textSize="18dp" />
+
+        <TextView
+            android:id="@+id/text_ball_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="xxxx-xx-xx(周x)"
+            android:textColor="@color/light_gray"
+            android:textSize="14dp" />
+
+    </LinearLayout>
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycle_red_ball"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp" />
+
+    <TextView
+        android:id="@+id/text_blue_ball_number"
+        style="@style/BallTextStyle"
+        android:layout_marginLeft="25dp"
+        android:background="@drawable/blue_ball_bg" />
+
+    <TextView
+        android:id="@+id/text_win_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:text="一等奖，共5注，每注9936561；二等奖，共94注，每注328228"
+        android:textColor="@color/light_gray"
+        android:textSize="16dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/province_line_border" />
+</LinearLayout>
