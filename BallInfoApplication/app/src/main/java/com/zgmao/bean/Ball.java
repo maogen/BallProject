@@ -48,4 +48,5 @@ public class Ball {
     public void setWinInfo(String winInfo) {
         this.winInfo = winInfo;
     }
+
 }

@@ -1,22 +1,33 @@
 package com.zgmao.tableImpl;
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 import com.zgmao.table.TBall;
-import java.lang.String;
-import java.util.List;
 
 @Transactional
 @Repository
-public interface TBallDao extends CrudRepository<TBall, Long> {
-
+public interface TBallDao extends PagingAndSortingRepository<TBall, Long> {
+	/**
+	 * 根据期号搜索
+	 * @param number
+	 * @return
+	 */
 	List<TBall> findByNumber(String number);
-//	TBall find(String number);
 
-//	@Query("from history u where u.number = :number")
-//	TBall findBall(@Param("number") String number);
-	
+	/**
+	 * 按照number顺序查询
+	 * @return
+	 */
+	List<TBall> findAllByOrderByNumberAsc();
+
+	/**
+	 * 按照number逆序查询
+	 * @return
+	 */
+	List<TBall> findAllByOrderByNumberDesc();
 }

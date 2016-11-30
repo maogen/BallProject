@@ -1,7 +1,9 @@
 package com.zgmao.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,11 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.google.gson.Gson;
 import com.zgmao.table.TBall;
 import com.zgmao.tableImpl.TBallDao;
+import com.zgmao.utils.BallAnalysisUtil;
 import com.zgmao.utils.Lg;
-import com.zgmao.utils.NumberUtils;
 import com.zgmao.utils.RequestUtil;
 import com.zgmao.utils.StringUtils;
+import com.zgmao.vo.AnalysisResult;
 import com.zgmao.vo.Ball;
+import com.zgmao.vo.NumberRate;
+import com.zgmao.vo.RecommendBall;
 import com.zgmao.vo.WinInfo;
 
 @RestController
@@ -95,7 +100,7 @@ public class BallController {
 			ball.addWinInfo(info);
 		}
 		// 将数据插入到数据库中
-		insertVo(getTableVoByView(ball));
+		insertVo(BallAnalysisUtil.getTableVoByView(ball));
 		return new Gson().toJson(ball);
 	}
 
@@ -109,7 +114,7 @@ public class BallController {
 		Pattern pattern;
 		Matcher matcher;
 		// 搜索双色球
-		String url = "http://baidu.lecai.com/lottery/draw/list/50?type=latest&num=50";
+		String url = "http://baidu.lecai.com/lottery/draw/list/50?type=latest&num=100";
 		String result = RequestUtil.baseGet(url, "", null);
 		// Lg.d(result);
 		String[] linesReslut = result.split("\n");// 将结果按行读取
@@ -208,16 +213,17 @@ public class BallController {
 
 	/**
 	 * 从数据中查找全部历史记录
-	 * 
+	 * http:localhost:9001/api/ball/getHistory
 	 * @return
 	 */
 	@GetMapping("/getHistory")
 	public List<Ball> getHistoryByDB() {
-		List<TBall> tBalls = (List<TBall>) tBallDao.findAll();
+		List<TBall> tBalls = (List<TBall>) tBallDao
+				.findAllByOrderByNumberDesc();
 		List<Ball> ballList = new ArrayList<>();
 		if (tBalls != null) {
 			for (TBall tBall : tBalls) {
-				Ball item = getViewByTableVo(tBall);
+				Ball item = BallAnalysisUtil.getViewByTableVo(tBall);
 				if (item != null) {
 					ballList.add(item);
 				}
@@ -237,7 +243,7 @@ public class BallController {
 		}
 		int size = ballList.size();
 		for (int i = 0; i < size; i++) {
-			TBall tBall = getTableVoByView(ballList.get(i));
+			TBall tBall = BallAnalysisUtil.getTableVoByView(ballList.get(i));
 			insertVo(tBall);
 		}
 	}
@@ -260,113 +266,100 @@ public class BallController {
 	}
 
 	/**
-	 * 将从网站解析得到的实体类，转成数据库实体类
-	 * 
-	 * @param ball
-	 * @return
+	 * 出现总次数 	16 	15 	23 	13 	15 	23 	14 	20 	18 	16 	15 	25 	17 	19 	18 	14 	19 	21 	22 	24 	15 	21 	16 	15 	18 	23 	22 	18 	19 	15 	17 	23 	11 	10 	5 	7 	10 	4 	3 	5 	5 	8 	5 	6 	7 	4 	6 	5 	10
+	 * 平均遗漏值 	5 	6 	3 	5 	5 	3 	5 	4 	3 	4 	6 	3 	5 	4 	4 	7 	4 	3 	3 	4 	6 	3 	4 	5 	4 	3 	5 	3 	4 	6 	4 	2 	9 	7 	12 	20 	5 	13 	25 	14 	12 	8 	12 	12 	7 	16 	9 	15 	8
+	 * 最大遗漏值 	22 	24 	10 	17 	22 	11 	17 	14 	15 	13 	25 	16 	22 	17 	15 	25 	15 	13 	15 	22 	20 	14 	15 	18 	15 	11 	23 	11 	13 	25 	14 	8 	36 	21 	37 	60 	16 	37 	63 	37 	31 	20 	29 	33 	22 	44 	32 	40 	32
+	 * 最大连出值 	2 	2 	3 	2 	3 	2 	2 	3 	2 	2 	2 	3 	3 	3 	2 	3 	3 	3 	2 	4 	2 	2 	2 	2 	2 	2 	3 	3 	2 	4 	2 	2 	2 	2 	2 	1 	1 	1 	2 	2 	2 	2 	1 	2 	1 	1 	1 	3 	1
+	            1 	2 	3 	4 	5 	6 	7 	8 	9 	10 	11 	12 	13 	14 	15 	16 	17 	18 	19 	20 	21 	22 	23 	24 	25 	26 	27 	28 	29 	30 	31 	32 	33 	1 	2 	3 	4 	5 	6 	7 	8 	9 	10 	11 	12 	13 	14 	15 	16
+	 * 分析
+	 * http:localhost:9001/api/ball/analysis
+	 * @throws Exception 
 	 */
-	private TBall getTableVoByView(Ball ball) {
-		if (ball == null) {
-			return null;
+	@GetMapping("/analysis")
+	public AnalysisResult analysis() throws Exception {
+		// 初始化红球数组
+		int redCount = 33;
+		int buleCount = 16;
+		NumberRate[] redRates = new NumberRate[redCount];
+		NumberRate[] buleRates = new NumberRate[buleCount];
+		for (int i = 0; i < redCount; i++) {
+			redRates[i] = new NumberRate(i + 1, 0);
 		}
-		TBall tBall = new TBall();
-		tBall.setNumber(ball.getBallNumber());
-		tBall.setBallDate(ball.getBallDate());
+		for (int i = 0; i < buleCount; i++) {
+			buleRates[i] = new NumberRate(i + 1, 1);
+		}
+		// 得到数据库数据
+		List<Ball> balls = getHistoryByDB();
+		if (balls == null) {
+			throw new Exception("数据库双色球数据为空");
+		}
+		// 保存蓝球出现个数
+		Map<Integer, Integer> blueMap = new HashMap<>();
+		// 循环遍历，处理数字
+		for (int i = 0; i < balls.size(); i++) {
+			Ball ball = balls.get(i);
+			// 得到红球号码和蓝球号码
+			int blueNumber = ball.getBlueNumber();
+			List<Integer> redNumberList = ball.getRedNumber();
+			// 循环记录33个红球号码
+			for (int j = 0; j < redRates.length; j++) {
+				NumberRate itemRedRate = redRates[j];
+				if (BallAnalysisUtil.isExistRedBall(redNumberList,
+						itemRedRate.getNumber())) {
+					// 红球出现
+					itemRedRate.addContinueCount();
+					itemRedRate.setShow();
 
-		List<Integer> redNum = ball.getRedNumber();
-		if (redNum != null) {
-			StringBuilder sbBuilder = new StringBuilder();
-			int size = redNum.size();
-			for (int i = 0; i < size; i++) {
-				if (i < size - 1) {
-					sbBuilder.append(redNum.get(i)).append(",");
+					if (i < NumberRate.MAX_COUNT_RED) {
+						// 最近红球出现一次，记录
+						itemRedRate.addShowCount();
+					}
+
 				} else {
-					sbBuilder.append(redNum.get(i));
+					// 出现空白
+					// 红球没出现
+					itemRedRate.addDismissCount();
+					itemRedRate.setNotShow();
 				}
 			}
-			tBall.setRed(sbBuilder.toString());
-		}
-
-		tBall.setBlue(ball.getBlueNumber());
-		WinInfo first = ball.getFirstInfo();
-		WinInfo second = ball.getSecondInfo();
-
-		StringBuilder sbInfo = new StringBuilder();
-		if (first != null) {
-			sbInfo.append(first.getTitle() + "，共" + first.getWinCount() + "注，每注"
-					+ first.getMoney() + "；");
-		}
-		if (second != null) {
-			sbInfo.append(second.getTitle() + "，共" + second.getWinCount()
-					+ "注，每注" + second.getMoney());
-		}
-		tBall.setWinInfo(sbInfo.toString());
-
-		return tBall;
-	}
-
-	/**
-	 * 将数据库实体类，转成从网站解析得到的实体类
-	 * 
-	 * @param tBall
-	 * @return
-	 */
-	private Ball getViewByTableVo(TBall tBall) {
-		if (tBall == null) {
-			return null;
-		}
-		Ball ball = new Ball();
-		ball.setBallDate(tBall.getBallDate());
-		ball.setBallNumber(tBall.getNumber());
-		ball.setBlueNumber(tBall.getBlue());
-		// 处理红球
-		String redStr = tBall.getRed();
-		String[] redStrArray = redStr.split(",");
-		int length = redStrArray.length;
-		for (int i = 0; i < length; i++) {
-			ball.addRedNumber(Integer.valueOf(redStrArray[i]));
-		}
-		// 处理获奖信息
-		String winInfo = tBall.getWinInfo();
-		String[] infoArray = winInfo.split("；");
-		for (int i = 0; i < infoArray.length; i++) {
-			Pattern pattern = Pattern.compile("\\d+");
-			Matcher matcher = pattern.matcher(infoArray[i]);
-			int countIndex = 0;
-			WinInfo winInfo2 = new WinInfo();
-			while (matcher.find()) {
-				if (countIndex == 0) {
-					// 第一次扫描到整数，是注数
-					winInfo2.setWinCount(Integer.valueOf(matcher.group()));
-				} else if (countIndex == 1) {
-					// 第二次扫描到整数，是每注奖金
-					winInfo2.setMoney(Integer.valueOf(matcher.group()));
+			// 循环记录16个红球号码
+			for (int j = 0; j < buleRates.length; j++) {
+				NumberRate itemBlueRate = buleRates[j];
+				if (blueNumber == itemBlueRate.getNumber()) {
+					// 篮球出现
+					itemBlueRate.addContinueCount();
+					itemBlueRate.setShow();
+					if (i < NumberRate.MAX_COUNT_BLUE) {
+						// 最近篮球出现一次，记录
+						itemBlueRate.addShowCount();
+					}
+				} else {
+					itemBlueRate.addDismissCount();
+					itemBlueRate.setNotShow();
 				}
-				countIndex++;
 			}
-			if (i == 0) {
-				// 一等奖
-				winInfo2.setTitle("一等奖");
-				ball.setFirstInfo(winInfo2);
-			} else if (i == 1) {
-				// 二等奖
-				winInfo2.setTitle("二等奖");
-				ball.setSecondInfo(winInfo2);
+			// 保存蓝球出现的个数
+			if (blueMap.containsKey(blueNumber)) {
+				int count = blueMap.get(ball.getBlueNumber());
+				count++;
+				blueMap.put(blueNumber, count);
+			} else {
+				blueMap.put(blueNumber, 1);
 			}
 		}
-		StringBuilder sb = new StringBuilder();
-		sb.append("本期").append(ball.getFirstInfo().getTitle()).append("：")
-				.append(ball.getFirstInfo().getWinCount()).append("注，每注")
-				.append(NumberUtils
-						.format3DotNumber(ball.getFirstInfo().getMoney()))
-				.append("元\n").append("本期")
-				.append(ball.getSecondInfo().getTitle()).append("：")
-				.append(ball.getSecondInfo().getWinCount()).append("注，每注")
-				.append(NumberUtils
-						.format3DotNumber(ball.getSecondInfo().getMoney()))
-				.append("元");
-		ball.setWinInfo(sb.toString());
-		return ball;
+		// BallAnalysisUtil.printBlue(blueMap);
+		// 排序，打印结果
+		BallAnalysisUtil.sortNumber(redRates);
+		BallAnalysisUtil.printNumberRate(redRates, 0);
+		BallAnalysisUtil.sortNumber(buleRates);
+		BallAnalysisUtil.printNumberRate(buleRates, 1);
+		// 设置结果
+		AnalysisResult recommendBall = new AnalysisResult();
+		RecommendBall redBall = BallAnalysisUtil.analysisRedBall(redRates);
+		recommendBall.setRedBall(redBall);
+		RecommendBall blueBall = BallAnalysisUtil.analysisBlueBall(buleRates);
+		recommendBall.setBlueBall(blueBall);
+		return recommendBall;
 	}
 
 }

@@ -45,15 +45,8 @@
 
     <TextView
         android:id="@+id/text_win_info"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="5dp"
-        android:text="一等奖，共5注，每注9936561；二等奖，共94注，每注328228"
-        android:textColor="@color/light_gray"
-        android:textSize="16dp" />
+        style="@style/BallMsgTextStyle"
+        android:text="一等奖，共5注，每注9936561；二等奖，共94注，每注328228" />
 
     <View
         android:layout_width="match_parent"

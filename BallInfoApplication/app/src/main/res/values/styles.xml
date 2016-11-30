@@ -23,6 +23,17 @@
         <item name="android:layout_marginLeft">5dp</item>
         <item name="android:layout_marginRight">5dp</item>
     </style>
+    <!-- 双色球消息字体样式 -->
+    <style name="BallMsgTextStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">5dp</item>
+        <item name="android:layout_marginLeft">10dp</item>
+        <item name="android:layout_marginRight">10dp</item>
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:textColor">@color/light_gray</item>
+        <item name="android:textSize">16dp</item>
+    </style>
     <!-- 标题右边按钮样式 -->
     <style name="TitleIconRightStyle">
         <item name="android:layout_alignParentRight">true</item>

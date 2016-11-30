@@ -11,8 +11,9 @@ import com.maf.utils.BaseToast;
 import com.maf.utils.LogUtils;
 import com.zgmao.adapter.HistoryBallAdapter;
 import com.zgmao.bean.Ball;
+import com.zgmao.bean.XRequest;
+import com.zgmao.dao.XRequestDao;
 import com.zgmao.utils.RequestUtils;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,8 @@ public class HistoryActivity extends BaseTitleActivity {
     private HistoryBallAdapter adapter;
     private List<Ball> ballList;
 
+    // 缓存数据库操作
+    private XRequestDao xRequestDao;
 
     @Override
     protected void initTitleView() {
@@ -57,6 +60,8 @@ public class HistoryActivity extends BaseTitleActivity {
     @Override
     protected void initView() {
         recyclerHistory = (RecyclerView) findViewById(R.id.recycle_history);
+
+        xRequestDao = new XRequestDao(this);
     }
 
     @Override
@@ -89,19 +94,22 @@ public class HistoryActivity extends BaseTitleActivity {
             @Override
             public void onSuccess(String result) {
                 LogUtils.d(result);
-                List<Ball> balls = GsonUtils.stringToGson(result, new TypeToken<List<Ball>>() {
-                });
-                if (balls != null && balls.size() > 0) {
-                    ballList.clear();
-                    ballList.addAll(balls);
-                    recyclerHistory.getAdapter().notifyDataSetChanged();
-                }
+                updateViewByResult(result);
+                // 请求成功，插入缓存
+                XRequest xRequest = new XRequest();
+                xRequest.setUrl(RequestUtils.url);
+                xRequest.setAction(RequestUtils.action_history);
+                xRequest.setBody(null);
+                xRequest.setResult(result);
+                xRequestDao.insertOrUpdate(xRequest);
             }
 
             @Override
             public void onError(String result) {
                 LogUtils.d(result);
                 BaseToast.makeTextShort("请求数据失败");
+                XRequest xRequest = xRequestDao.getRequest(RequestUtils.url, RequestUtils.action_history, null);
+                updateViewByResult(xRequest.getResult());
             }
 
             @Override
@@ -109,5 +117,20 @@ public class HistoryActivity extends BaseTitleActivity {
                 finishRefresh();
             }
         });
+    }
+
+    /**
+     * 根据结果刷新界面
+     *
+     * @param result
+     */
+    private void updateViewByResult(final String result) {
+        List<Ball> balls = GsonUtils.stringToGson(result, new TypeToken<List<Ball>>() {
+        });
+        if (balls != null && balls.size() > 0) {
+            ballList.clear();
+            ballList.addAll(balls);
+            recyclerHistory.getAdapter().notifyDataSetChanged();
+        }
     }
 }

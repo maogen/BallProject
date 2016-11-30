@@ -17,6 +17,7 @@ public class RequestUtils {
     public static String url = "http://192.168.1.179:9001";
     public static String action_info = "/api/ball/getBall";// 获取最近一期号码
     public static String action_history = "/api/ball/getHistory";// 获取历史号码
+    public static String action_analysis = "/api/ball/analysis";// 获取推荐号码
 
     /**
      * 请求双色球信息
@@ -34,5 +35,14 @@ public class RequestUtils {
      */
     public static void getHistory(XAPIServiceListener listener) {
         XBaseAPIUtils.baseGet(url, action_history, null, null, listener);
+    }
+
+    /**
+     * 请求推荐号码
+     *
+     * @param listener 监听器
+     */
+    public static void getAnalysis(XAPIServiceListener listener) {
+        XBaseAPIUtils.baseGet(url, action_analysis, null, null, listener);
     }
 }
