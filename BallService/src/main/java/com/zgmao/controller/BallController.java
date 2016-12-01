@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.google.gson.Gson;
+import com.zgmao.table.TAnalysis;
 import com.zgmao.table.TBall;
+import com.zgmao.tableImpl.TAnalysisDao;
 import com.zgmao.tableImpl.TBallDao;
 import com.zgmao.utils.BallAnalysisUtil;
 import com.zgmao.utils.Lg;
@@ -33,6 +35,8 @@ public class BallController {
 	 */
 	@Autowired
 	private TBallDao tBallDao;
+	@Autowired
+	private TAnalysisDao tAnalysisDao;
 
 	@GetMapping("/index")
 	public String index() {
@@ -277,6 +281,7 @@ public class BallController {
 	 */
 	@GetMapping("/analysis")
 	public AnalysisResult analysis() throws Exception {
+		String lastNumber = "";// 下一期期号
 		// 初始化红球数组
 		int redCount = 33;
 		int buleCount = 16;
@@ -292,6 +297,14 @@ public class BallController {
 		List<Ball> balls = getHistoryByDB();
 		if (balls == null) {
 			throw new Exception("数据库双色球数据为空");
+		}
+		if (balls.size() > 0) {
+			// 下一期
+			try {
+				lastNumber = String.valueOf(
+						Integer.valueOf(balls.get(0).getBallNumber()) + 1);
+			} catch (Exception e) {
+			}
 		}
 		// 保存蓝球出现个数
 		Map<Integer, Integer> blueMap = new HashMap<>();
@@ -359,7 +372,76 @@ public class BallController {
 		recommendBall.setRedBall(redBall);
 		RecommendBall blueBall = BallAnalysisUtil.analysisBlueBall(buleRates);
 		recommendBall.setBlueBall(blueBall);
+		recommendBall.setNextNumber(lastNumber);
+
+		saveAnalysis(recommendBall);
 		return recommendBall;
+	}
+
+	/**
+	 * 将预测结果保存到数据库中
+	 * @param recommendBall
+	 */
+	private void saveAnalysis(AnalysisResult analysisResult) {
+		if (analysisResult == null) {
+			return;
+		}
+		TAnalysis tAnalysis = new TAnalysis();
+		tAnalysis.setNumber(analysisResult.getNextNumber());
+
+		// 获取红球
+		RecommendBall red = analysisResult.getRedBall();
+		if (red != null) {
+			List<NumberRate> rates = red.getMustNumberList();
+			if (rates != null && rates.size() > 0) {
+				// 保存强烈推荐号码
+				StringBuilder sb = new StringBuilder();
+				for (NumberRate item : rates) {
+					sb.append(item.getNumber() + ",");
+				}
+				tAnalysis.setMustred(sb.toString());
+			}
+			List<NumberRate> rates2 = red.getNeedNumberList();
+			if (rates2 != null && rates2.size() > 0) {
+				// 保存一般推荐号码
+				StringBuilder sb = new StringBuilder();
+				for (NumberRate item : rates2) {
+					sb.append(item.getNumber() + ",");
+				}
+				tAnalysis.setNeedred(sb.toString());
+			}
+		}
+		// 获取蓝球
+		RecommendBall blue = analysisResult.getBlueBall();
+		if (blue != null) {
+			List<NumberRate> rates3 = blue.getMustNumberList();
+			if (rates3 != null && rates3.size() > 0) {
+				// 保存强烈推荐号码
+				StringBuilder sb = new StringBuilder();
+				for (NumberRate item : rates3) {
+					sb.append(item.getNumber() + ",");
+				}
+				tAnalysis.setMustredblue(sb.toString());
+			}
+			List<NumberRate> rates4 = blue.getNeedNumberList();
+			if (rates4 != null && rates4.size() > 0) {
+				// 保存一般推荐号码
+				StringBuilder sb = new StringBuilder();
+				for (NumberRate item : rates4) {
+					sb.append(item.getNumber() + ",");
+				}
+				tAnalysis.setNeedblue(sb.toString());
+			}
+		}
+
+		String lastNumber = analysisResult.getNextNumber();
+		List<TAnalysis> oldList = tAnalysisDao.findByNumber(lastNumber);
+		if (oldList != null && oldList.size() > 0) {
+			Lg.d("第" + lastNumber + "期已经预测过，更新");
+			// 同一期之前已经预测过了，覆盖
+			tAnalysis.setId(oldList.get(0).getId());
+		}
+		tAnalysisDao.save(tAnalysis);
 	}
 
 }

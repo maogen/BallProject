@@ -30,4 +30,5 @@ public interface TBallDao extends PagingAndSortingRepository<TBall, Long> {
 	 * @return
 	 */
 	List<TBall> findAllByOrderByNumberDesc();
+	
 }

@@ -25,7 +25,7 @@ public class BallServiceApplicationTests {
 	public void contextLoads() {
 		try {
 			AnalysisResult re = controll.analysis();
-
+			Lg.d("第" + re.getNextNumber() + "期：");
 			// 获取红球
 			RecommendBall red = re.getRedBall();
 			List<NumberRate> rates = red.getMustNumberList();

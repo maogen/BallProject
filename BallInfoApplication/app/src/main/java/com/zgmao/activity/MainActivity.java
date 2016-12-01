@@ -133,47 +133,54 @@ public class MainActivity extends BaseTitleActivity {
      * @param analysisResult
      */
     private void setAnalysisView(AnalysisResult analysisResult) {
+        if (analysisResult == null) {
+            return;
+        }
         StringBuilder sb = new StringBuilder();
         // 获取红球
         RecommendBall red = analysisResult.getRedBall();
-        List<NumberRate> rates = red.getMustNumberList();
-        if (rates == null || rates.size() == 0) {
-            sb.append("无强烈推荐红球号码\n");
-        } else {
-            sb.append("强烈推荐红球号码：\n");
-            for (NumberRate item : rates) {
-                sb.append(NumberUtils.intTo2Dec(item.getNumber()) + "  ");
+        if (red != null) {
+            List<NumberRate> rates = red.getMustNumberList();
+            if (rates == null || rates.size() == 0) {
+                sb.append("无强烈推荐红球号码\n");
+            } else {
+                sb.append("强烈推荐红球号码：\n");
+                for (NumberRate item : rates) {
+                    sb.append(NumberUtils.intTo2Dec(item.getNumber()) + "  ");
+                }
+                sb.append("\n");
             }
-            sb.append("\n");
-        }
-        List<NumberRate> rates2 = red.getNeedNumberList();
-        if (rates2 != null && rates2.size() > 0) {
-            sb.append("推荐红球号码：\n");
-            for (NumberRate item : rates2) {
-                sb.append(NumberUtils.intTo2Dec(item.getNumber()) + "  ");
-            }
-            sb.append("\n");
+            List<NumberRate> rates2 = red.getNeedNumberList();
+            if (rates2 != null && rates2.size() > 0) {
+                sb.append("推荐红球号码：\n");
+                for (NumberRate item : rates2) {
+                    sb.append(NumberUtils.intTo2Dec(item.getNumber()) + "  ");
+                }
+                sb.append("\n");
 
+            }
         }
         // 获取蓝球
         RecommendBall blue = analysisResult.getBlueBall();
-        List<NumberRate> rates3 = blue.getMustNumberList();
-        if (rates3 == null || rates3.size() == 0) {
-            sb.append("无强烈推荐蓝球号码\n");
-        } else {
-            sb.append("强烈推荐蓝球号码：\n");
-            for (NumberRate item : rates3) {
-                sb.append(NumberUtils.intTo2Dec(item.getNumber()) + "  ");
+        if (blue != null) {
+            List<NumberRate> rates3 = blue.getMustNumberList();
+            if (rates3 == null || rates3.size() == 0) {
+                sb.append("无强烈推荐蓝球号码\n");
+            } else {
+                sb.append("强烈推荐蓝球号码：\n");
+                for (NumberRate item : rates3) {
+                    sb.append(NumberUtils.intTo2Dec(item.getNumber()) + "  ");
+                }
+                sb.append("\n");
             }
-            sb.append("\n");
-        }
-        List<NumberRate> rates4 = blue.getNeedNumberList();
-        if (rates4 != null && rates4.size() > 0) {
-            sb.append("推荐蓝球号码：\n");
-            for (NumberRate item : rates4) {
-                sb.append(NumberUtils.intTo2Dec(item.getNumber()) + "  ");
+            List<NumberRate> rates4 = blue.getNeedNumberList();
+            if (rates4 != null && rates4.size() > 0) {
+                sb.append("推荐蓝球号码：\n");
+                for (NumberRate item : rates4) {
+                    sb.append(NumberUtils.intTo2Dec(item.getNumber()) + "  ");
+                }
+                sb.append("\n");
             }
-            sb.append("\n");
         }
         textNextMsg.setText(sb.toString());
     }
@@ -245,7 +252,7 @@ public class MainActivity extends BaseTitleActivity {
                 LogUtils.d(result);
                 BaseToast.makeTextShort("请求数据失败");
                 // 获取数据库
-                XRequest xRequest = xRequestDao.getRequest(RequestUtils.url, RequestUtils.action_info, null);
+                XRequest xRequest = xRequestDao.getRequest(RequestUtils.url, RequestUtils.action_analysis, null);
                 AnalysisResult analysisResult = GsonUtils.stringToGson(xRequest.getResult(), new TypeToken<AnalysisResult>() {
                 });
                 setAnalysisView(analysisResult);

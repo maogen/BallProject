@@ -6,8 +6,17 @@ package com.zgmao.vo;
  *
  */
 public class AnalysisResult {
+	private String nextNumber;// 下一期期号
 	private RecommendBall redBall;
 	private RecommendBall blueBall;
+
+	public String getNextNumber() {
+		return nextNumber;
+	}
+
+	public void setNextNumber(String nextNumber) {
+		this.nextNumber = nextNumber;
+	}
 
 	public RecommendBall getRedBall() {
 		return redBall;

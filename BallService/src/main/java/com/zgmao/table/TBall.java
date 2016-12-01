@@ -24,7 +24,7 @@ public class TBall implements Serializable {
 	private String red;// 红色号码用,隔开
 	@Column
 	private Integer blue;
-	
+	@Column
 	private String winInfo;// 获奖信息
 
 	public Long getId() {
