@@ -3,6 +3,7 @@ package com.zgmao.activity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 import com.google.gson.reflect.TypeToken;
 import com.maf.git.GsonUtils;
 import com.maf.net.XAPIServiceListener;
+import com.maf.popupwindow.BaseListPopup;
 import com.maf.utils.BaseToast;
 import com.maf.utils.DialogUtil;
 import com.maf.utils.LogUtils;
@@ -40,10 +42,12 @@ public class MainActivity extends BaseTitleActivity {
     // 缓存数据库操作
     private XRequestDao xRequestDao;
 
+    private BaseListPopup listPopup;
+
     @Override
     protected void initTitleView() {
         titleBarView.setTitle("第xxxxxxx期开奖结果");
-        titleBarView.setTitleRight("查看历史", this);
+        titleBarView.setOnMenuClick(this);
     }
 
     @Override
@@ -72,6 +76,20 @@ public class MainActivity extends BaseTitleActivity {
         textNextMsg = (TextView) findViewById(R.id.text_analysis_number);
 
         xRequestDao = new XRequestDao(this);
+        listPopup = new BaseListPopup(this);
+        String[] menus = new String[]{"查看历史", "是否中奖"};
+        listPopup.setMenu(menus, null, new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if (i == 0) {
+                    // 进入查看历史界面
+                    startActivity(HistoryActivity.class);
+                } else if (i == 1) {
+                    //查看获奖情况
+                }
+                listPopup.dismiss();
+            }
+        });
     }
 
     @Override
@@ -95,6 +113,10 @@ public class MainActivity extends BaseTitleActivity {
             case R.id.text_title_right:
                 // 进入查看历史界面
                 startActivity(HistoryActivity.class);
+                break;
+            case R.id.image_title_menu:
+                // 显示菜单
+                listPopup.showBottomByView(v);
                 break;
             default:
                 break;
@@ -214,9 +236,11 @@ public class MainActivity extends BaseTitleActivity {
                 BaseToast.makeTextShort("请求数据失败");
                 // 获取数据库
                 XRequest xRequest = xRequestDao.getRequest(RequestUtils.url, RequestUtils.action_info, null);
-                ball = GsonUtils.stringToGson(xRequest.getResult(), new TypeToken<Ball>() {
-                });
-                setBallView();
+                if (xRequest != null) {
+                    ball = GsonUtils.stringToGson(xRequest.getResult(), new TypeToken<Ball>() {
+                    });
+                    setBallView();
+                }
             }
 
             @Override
@@ -253,9 +277,11 @@ public class MainActivity extends BaseTitleActivity {
                 BaseToast.makeTextShort("请求数据失败");
                 // 获取数据库
                 XRequest xRequest = xRequestDao.getRequest(RequestUtils.url, RequestUtils.action_analysis, null);
-                AnalysisResult analysisResult = GsonUtils.stringToGson(xRequest.getResult(), new TypeToken<AnalysisResult>() {
-                });
-                setAnalysisView(analysisResult);
+                if (xRequest != null) {
+                    AnalysisResult analysisResult = GsonUtils.stringToGson(xRequest.getResult(), new TypeToken<AnalysisResult>() {
+                    });
+                    setAnalysisView(analysisResult);
+                }
             }
 
             @Override

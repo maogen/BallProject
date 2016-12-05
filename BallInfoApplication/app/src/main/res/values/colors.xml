@@ -7,4 +7,5 @@
     <color name="color_red_ball">#FF4B4B</color>
     <!--  篮球颜色 -->
     <color name="color_blue_ball">#3EA1F4</color>
+    <color name="black_gray">#999999</color>
 </resources>

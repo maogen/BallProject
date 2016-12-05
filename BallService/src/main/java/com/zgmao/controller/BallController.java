@@ -8,11 +8,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.google.gson.Gson;
 import com.zgmao.table.TAnalysis;
 import com.zgmao.table.TBall;
 import com.zgmao.tableImpl.TAnalysisDao;
@@ -49,7 +50,7 @@ public class BallController {
 	 * @return
 	 */
 	@GetMapping("/getBall")
-	public String getBallNumber() {
+	public Ball getBallNumber() {
 		Ball ball = new Ball();
 
 		// 搜索双色球
@@ -105,7 +106,7 @@ public class BallController {
 		}
 		// 将数据插入到数据库中
 		insertVo(BallAnalysisUtil.getTableVoByView(ball));
-		return new Gson().toJson(ball);
+		return ball;
 	}
 
 	/**
@@ -217,13 +218,41 @@ public class BallController {
 
 	/**
 	 * 从数据中查找全部历史记录
-	 * http:localhost:9001/api/ball/getHistory
+	 * http://localhost:9001/api/ball/getHistory
 	 * @return
 	 */
 	@GetMapping("/getHistory")
 	public List<Ball> getHistoryByDB() {
 		List<TBall> tBalls = (List<TBall>) tBallDao
 				.findAllByOrderByNumberDesc();
+		List<Ball> ballList = new ArrayList<>();
+		if (tBalls != null) {
+			for (TBall tBall : tBalls) {
+				Ball item = BallAnalysisUtil.getViewByTableVo(tBall);
+				if (item != null) {
+					ballList.add(item);
+				}
+			}
+		}
+		return ballList;
+	}
+
+	/**
+	 * 从数据中查找全部历史记录
+	 * http://localhost:9001/api/ball/getHistoryByPage
+	 * @return
+	 */
+	@GetMapping("/getHistoryByPage")
+	public List<Ball> getHistoryByPage(Integer page) {
+		int pageNum = 20;// 每页20条数据
+		if (page > 0) {
+			// 前端传的页码减一
+			page = page - 1;
+		}
+		// select * from history order by number desc limit start,pageNum;
+		List<TBall> tBalls = tBallDao
+				.findAllByOrderByNumberDesc(new PageRequest(page, pageNum));
+		// List<TBall> tBalls = pageBalls.getContent();
 		List<Ball> ballList = new ArrayList<>();
 		if (tBalls != null) {
 			for (TBall tBall : tBalls) {
@@ -444,4 +473,26 @@ public class BallController {
 		tAnalysisDao.save(tAnalysis);
 	}
 
+	/**
+	 * 根据传进来的双色球信息，判断是否中奖
+	 * http://localhost:9001/api/ball/analyseWin
+	 * @param ball
+	 * @return
+	 */
+	@PostMapping("analyseWin")
+	public String analyseWinMsg(Ball ball) {
+		if (ball == null) {
+			return "信息为空";
+		}
+		List<Integer> redBall = ball.getRedNumber();
+		if (redBall == null || redBall.size() < 6) {
+			return "请输入6个红球号码";
+		}
+		Integer blueBall = ball.getBlueNumber();
+		if (blueBall == null) {
+			return "请输入蓝球号码";
+		}
+		Ball oriBall = getBallNumber();
+		return BallAnalysisUtil.analyseWin(oriBall, ball);
+	}
 }

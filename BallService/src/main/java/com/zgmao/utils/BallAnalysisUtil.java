@@ -333,4 +333,53 @@ public class BallAnalysisUtil {
 			}
 		}
 	}
+
+	/**
+	 *  分析中奖情况
+	 * @param oriBall 原始号码
+	 * @param myBall 我的号码
+	 * @return
+	 */
+	public static String analyseWin(Ball oriBall, Ball myBall) {
+		String myNumber = myBall.getBallNumber();
+		if (StringUtils.isNotNul(myNumber)) {
+			// 如果期号不为空，判断期号是否一致；如果为空，则默认为是最新的一期
+			if (!myNumber.equals(oriBall.getBallNumber())) {
+				return "期号不一致";
+			}
+		}
+		List<Integer> oriRedBall = oriBall.getRedNumber();
+		Integer oriBlueBall = oriBall.getBlueNumber();
+
+		List<Integer> myRedBall = myBall.getRedNumber();
+		Integer myBlueBall = myBall.getBlueNumber();
+
+		int redCount = 0;// 红球中的个数
+		for (Integer myRedItem : myRedBall) {
+			for (Integer oriRedItem : oriRedBall) {
+				if (myRedItem == oriRedItem) {
+					redCount++;
+					break;
+				}
+			}
+		}
+		if (redCount == 6 && myBlueBall == oriBlueBall) {
+			return "恭喜您中了一等奖。\n本期" + oriBall.getWinInfo();
+		} else if (redCount == 6) {
+			return "恭喜您中了二等奖。\n本期" + oriBall.getWinInfo();
+		} else if (redCount == 5 && myBlueBall == oriBlueBall) {
+			return "恭喜您中了三等奖3000元。\n本期" + oriBall.getWinInfo();
+		} else if ((redCount == 5)
+				|| (redCount == 4 && myBlueBall == oriBlueBall)) {
+			return "恭喜您中了四等奖200元。\n本期" + oriBall.getWinInfo();
+		} else if ((redCount == 4)
+				|| (redCount == 3 && myBlueBall == oriBlueBall)) {
+			return "恭喜您中了五等奖10元。\n本期" + oriBall.getWinInfo();
+		} else if ((redCount == 2 && myBlueBall == oriBlueBall)
+				|| (redCount == 1 && myBlueBall == oriBlueBall)
+				|| (myBlueBall == oriBlueBall)) {
+			return "恭喜您中了六等奖5元。\n本期" + oriBall.getWinInfo();
+		}
+		return "很遗憾，您未中奖";
+	}
 }

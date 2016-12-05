@@ -3,6 +3,9 @@ package com.zgmao.utils;
 import com.maf.net.XAPIServiceListener;
 import com.maf.net.XBaseAPIUtils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 项目名称：BallInfoApplication
  * 类描述：
@@ -16,7 +19,7 @@ import com.maf.net.XBaseAPIUtils;
 public class RequestUtils {
     public static String url = "http://192.168.1.179:9001";
     public static String action_info = "/api/ball/getBall";// 获取最近一期号码
-    public static String action_history = "/api/ball/getHistory";// 获取历史号码
+    public static String action_history = "/api/ball/getHistoryByPage";// 获取历史号码
     public static String action_analysis = "/api/ball/analysis";// 获取推荐号码
 
     /**
@@ -33,8 +36,10 @@ public class RequestUtils {
      *
      * @param listener 监听器
      */
-    public static void getHistory(XAPIServiceListener listener) {
-        XBaseAPIUtils.baseGet(url, action_history, null, null, listener);
+    public static void getHistory(XAPIServiceListener listener, int page) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("page", page);
+        XBaseAPIUtils.getObject(url, action_history, null, map, listener);
     }
 
     /**

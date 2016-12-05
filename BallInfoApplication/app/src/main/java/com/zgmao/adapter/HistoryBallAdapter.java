@@ -41,7 +41,7 @@ public class HistoryBallAdapter extends BaseRecycleAdapter<Ball, HistoryBallHold
     @Override
     public void onBindViewHolder(HistoryBallHolder holder, int position) {
         Ball item = list.get(position);
-        holder.textNumber.setText("第" + item.getBallNumber() + "期  ");
+        holder.textNumber.setText(position + "：第" + item.getBallNumber() + "期  ");
         holder.textDate.setText(item.getBallDate());
         // 设置红球
         RedBallAdapter adapter = new RedBallAdapter(context, item.getRedNumber());

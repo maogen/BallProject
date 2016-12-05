@@ -1,4 +1,4 @@
-package com.zgmao.views;
+package com.maf.views;
 
 import android.app.Activity;
 import android.content.Context;
@@ -8,7 +8,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import zgmao.com.ballinfo.R;
+import com.maf.R;
+
 
 /**
  * 项目名称：BallInfoApplication
@@ -23,6 +24,7 @@ import zgmao.com.ballinfo.R;
 public class TitleBarView extends RelativeLayout implements View.OnClickListener {
     private ImageView imageBack;// 返回按钮
     private TextView textTitle;// 标题
+    private ImageView imageMenu;// 菜单
     private TextView textTitleRight;// 右边文字
 
     public TitleBarView(Context context) {
@@ -40,6 +42,7 @@ public class TitleBarView extends RelativeLayout implements View.OnClickListener
     protected void onFinishInflate() {
         imageBack = (ImageView) findViewById(R.id.image_title_back);
         textTitle = (TextView) findViewById(R.id.text_product_title);
+        imageMenu = (ImageView) findViewById(R.id.image_title_menu);
         textTitleRight = (TextView) findViewById(R.id.text_title_right);
         // 设置点击事件
         imageBack.setOnClickListener(this);
@@ -78,17 +81,27 @@ public class TitleBarView extends RelativeLayout implements View.OnClickListener
         textTitle.setText(title);
     }
 
+    /**
+     * 设置菜单点击监听器
+     * R.id.image_title_menu
+     *
+     * @param onClickListener 监听器
+     */
+    public void setOnMenuClick(OnClickListener onClickListener) {
+        imageMenu.setVisibility(VISIBLE);
+        imageMenu.setOnClickListener(onClickListener);
+    }
+
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.image_title_back:
-                // 返回键
-                Context context = getContext();
-                if (context instanceof Activity) {
-                    ((Activity) context).setResult(Activity.RESULT_OK);
-                    ((Activity) context).finish();
-                }
-                break;
+        int id = v.getId();
+        if (id == R.id.image_title_back) {
+            // 返回键
+            Context context = getContext();
+            if (context instanceof Activity) {
+                ((Activity) context).setResult(Activity.RESULT_OK);
+                ((Activity) context).finish();
+            }
         }
     }
 }

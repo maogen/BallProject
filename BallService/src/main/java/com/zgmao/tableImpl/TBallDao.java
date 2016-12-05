@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
@@ -30,5 +31,10 @@ public interface TBallDao extends PagingAndSortingRepository<TBall, Long> {
 	 * @return
 	 */
 	List<TBall> findAllByOrderByNumberDesc();
+	/**
+	 * 按照number逆序查询
+	 * @return
+	 */
+	List<TBall> findAllByOrderByNumberDesc(Pageable pageable);
 	
 }

@@ -6,13 +6,13 @@ import android.view.View;
 
 import com.google.gson.reflect.TypeToken;
 import com.maf.git.GsonUtils;
+import com.maf.interfaces.ScrollCallBack;
 import com.maf.net.XAPIServiceListener;
 import com.maf.utils.BaseToast;
 import com.maf.utils.LogUtils;
+import com.maf.views.CustomScrollView;
 import com.zgmao.adapter.HistoryBallAdapter;
 import com.zgmao.bean.Ball;
-import com.zgmao.bean.XRequest;
-import com.zgmao.dao.XRequestDao;
 import com.zgmao.utils.RequestUtils;
 
 import java.util.ArrayList;
@@ -35,8 +35,12 @@ public class HistoryActivity extends BaseTitleActivity {
     private HistoryBallAdapter adapter;
     private List<Ball> ballList;
 
-    // 缓存数据库操作
-    private XRequestDao xRequestDao;
+    // 监听滑到顶部，滑到底部加载更多事件
+    private CustomScrollView customScrollView;
+    /**
+     * 当前第几页数据
+     */
+    private int indexPage = 1;
 
     @Override
     protected void initTitleView() {
@@ -50,6 +54,8 @@ public class HistoryActivity extends BaseTitleActivity {
 
     @Override
     public void refreshing() {
+        indexPage = 1;
+        request();
     }
 
     @Override
@@ -60,13 +66,23 @@ public class HistoryActivity extends BaseTitleActivity {
     @Override
     protected void initView() {
         recyclerHistory = (RecyclerView) findViewById(R.id.recycle_history);
-
-        xRequestDao = new XRequestDao(this);
+        customScrollView = (CustomScrollView) findViewById(R.id.scrollView);
     }
 
     @Override
     protected void initEvent() {
+        customScrollView.setCallBack(new ScrollCallBack() {
+            @Override
+            public void OnScrollTop(boolean isTop) {
+                LogUtils.d("是否滑动到顶部：" + isTop);
+            }
 
+            @Override
+            public void scrollBottomState() {
+                LogUtils.d("滑动到底部");
+                request();
+            }
+        });
     }
 
     @Override
@@ -90,33 +106,28 @@ public class HistoryActivity extends BaseTitleActivity {
         if (swipeRefreshLayout != null && !swipeRefreshLayout.isRefreshing()) {
             swipeRefreshLayout.autoRefresh();
         }
+        customScrollView.setIsLoading(true);
+        BaseToast.makeTextShort("正在加载第" + indexPage + "页");
         RequestUtils.getHistory(new XAPIServiceListener() {
             @Override
             public void onSuccess(String result) {
                 LogUtils.d(result);
+                BaseToast.makeTextShort("第" + indexPage + "页加载完成");
                 updateViewByResult(result);
-                // 请求成功，插入缓存
-                XRequest xRequest = new XRequest();
-                xRequest.setUrl(RequestUtils.url);
-                xRequest.setAction(RequestUtils.action_history);
-                xRequest.setBody(null);
-                xRequest.setResult(result);
-                xRequestDao.insertOrUpdate(xRequest);
+
             }
 
             @Override
             public void onError(String result) {
                 LogUtils.d(result);
                 BaseToast.makeTextShort("请求数据失败");
-                XRequest xRequest = xRequestDao.getRequest(RequestUtils.url, RequestUtils.action_history, null);
-                updateViewByResult(xRequest.getResult());
             }
 
             @Override
             public void onFinished() {
                 finishRefresh();
             }
-        });
+        }, indexPage);
     }
 
     /**
@@ -127,10 +138,16 @@ public class HistoryActivity extends BaseTitleActivity {
     private void updateViewByResult(final String result) {
         List<Ball> balls = GsonUtils.stringToGson(result, new TypeToken<List<Ball>>() {
         });
+
         if (balls != null && balls.size() > 0) {
-            ballList.clear();
+            if (indexPage == 1) {
+                // 第一页
+                ballList.clear();
+            }
+            indexPage++;
             ballList.addAll(balls);
             recyclerHistory.getAdapter().notifyDataSetChanged();
+            customScrollView.setIsLoading(false);// 设置成非加载状态
         }
     }
 }
