@@ -86,6 +86,7 @@ public class MainActivity extends BaseTitleActivity {
                     startActivity(HistoryActivity.class);
                 } else if (i == 1) {
                     //查看获奖情况
+                    startActivity(NumberWinActivity.class);
                 }
                 listPopup.dismiss();
             }

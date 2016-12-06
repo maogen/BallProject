@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/layout_titlebar_back" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/view_red_input"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="50dp"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/edit_input_1"
+                style="@style/NumberEditInput" />
+
+            <EditText
+                android:id="@+id/edit_input_2"
+                style="@style/NumberEditInput" />
+
+            <EditText
+                android:id="@+id/edit_input_3"
+                style="@style/NumberEditInput" />
+
+            <EditText
+                android:id="@+id/edit_input_4"
+                style="@style/NumberEditInput" />
+
+            <EditText
+                android:id="@+id/edit_input_5"
+                style="@style/NumberEditInput" />
+
+            <EditText
+                android:id="@+id/edit_input_6"
+                style="@style/NumberEditInput" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/view_red_input"
+            android:layout_below="@id/view_red_input"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/edit_input_blue"
+                style="@style/NumberEditInput"
+                android:background="@drawable/blue_edit_white_bg" />
+
+            <TextView
+                android:id="@+id/text_re_input"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="10dp"
+                android:gravity="bottom"
+                android:text="重新输入"
+                android:textStyle="italic" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/btn_analysis_win"
+        style="@style/BaseBtnBlueWidthStyle"
+        android:text="确定" />
+
+    <TextView
+        android:id="@+id/text_analysis_msg"
+        style="@style/BallMsgTextStyle"
+        android:text="" />
+</LinearLayout>

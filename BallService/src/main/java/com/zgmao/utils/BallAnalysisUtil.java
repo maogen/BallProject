@@ -364,21 +364,21 @@ public class BallAnalysisUtil {
 			}
 		}
 		if (redCount == 6 && myBlueBall == oriBlueBall) {
-			return "恭喜您中了一等奖。\n本期" + oriBall.getWinInfo();
+			return "恭喜您中了一等奖。\n" + oriBall.getWinInfo();
 		} else if (redCount == 6) {
-			return "恭喜您中了二等奖。\n本期" + oriBall.getWinInfo();
+			return "恭喜您中了二等奖。\n" + oriBall.getWinInfo();
 		} else if (redCount == 5 && myBlueBall == oriBlueBall) {
-			return "恭喜您中了三等奖3000元。\n本期" + oriBall.getWinInfo();
+			return "恭喜您中了三等奖3000元。\n" + oriBall.getWinInfo();
 		} else if ((redCount == 5)
 				|| (redCount == 4 && myBlueBall == oriBlueBall)) {
-			return "恭喜您中了四等奖200元。\n本期" + oriBall.getWinInfo();
+			return "恭喜您中了四等奖200元。\n" + oriBall.getWinInfo();
 		} else if ((redCount == 4)
 				|| (redCount == 3 && myBlueBall == oriBlueBall)) {
-			return "恭喜您中了五等奖10元。\n本期" + oriBall.getWinInfo();
+			return "恭喜您中了五等奖10元。\n" + oriBall.getWinInfo();
 		} else if ((redCount == 2 && myBlueBall == oriBlueBall)
 				|| (redCount == 1 && myBlueBall == oriBlueBall)
 				|| (myBlueBall == oriBlueBall)) {
-			return "恭喜您中了六等奖5元。\n本期" + oriBall.getWinInfo();
+			return "恭喜您中了六等奖5元。\n" + oriBall.getWinInfo();
 		}
 		return "很遗憾，您未中奖";
 	}

@@ -2,6 +2,7 @@ package com.zgmao.utils;
 
 import com.maf.net.XAPIServiceListener;
 import com.maf.net.XBaseAPIUtils;
+import com.zgmao.bean.Ball;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +22,7 @@ public class RequestUtils {
     public static String action_info = "/api/ball/getBall";// 获取最近一期号码
     public static String action_history = "/api/ball/getHistoryByPage";// 获取历史号码
     public static String action_analysis = "/api/ball/analysis";// 获取推荐号码
+    public static String action_analisis_win = "/api/ball/analyseWin";// 判断是否中奖
 
     /**
      * 请求双色球信息
@@ -49,5 +51,15 @@ public class RequestUtils {
      */
     public static void getAnalysis(XAPIServiceListener listener) {
         XBaseAPIUtils.baseGet(url, action_analysis, null, null, listener);
+    }
+
+    /**
+     * 判断是否中奖
+     *
+     * @param listener 监听器
+     * @param ball
+     */
+    public static void getAnalysisWin(XAPIServiceListener listener, Ball ball) {
+        XBaseAPIUtils.postObject(url, action_analisis_win, ball, null, listener);
     }
 }
