@@ -77,7 +77,7 @@ public class MainActivity extends BaseTitleActivity {
 
         xRequestDao = new XRequestDao(this);
         listPopup = new BaseListPopup(this);
-        String[] menus = new String[]{"查看历史", "是否中奖"};
+        String[] menus = new String[]{"查看历史", "是否中奖", "设置"};
         listPopup.setMenu(menus, null, new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -87,6 +87,9 @@ public class MainActivity extends BaseTitleActivity {
                 } else if (i == 1) {
                     //查看获奖情况
                     startActivity(NumberWinActivity.class);
+                } else if (i == 2) {
+                    // 设置
+                    startActivity(SettingActivity.class);
                 }
                 listPopup.dismiss();
             }

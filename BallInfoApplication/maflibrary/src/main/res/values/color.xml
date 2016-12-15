@@ -25,5 +25,6 @@
     <color name="green_base_button">#63BA72</color>
     <!-- 标题栏背景色 -->
     <color name="titlebar_background">#44464d</color>
-
+    <!-- 所有界面的公用背景色 -->
+    <color name="view_background">#eff2f5</color>
 </resources>

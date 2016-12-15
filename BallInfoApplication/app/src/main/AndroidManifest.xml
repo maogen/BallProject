@@ -25,6 +25,9 @@
         <activity android:name="com.zgmao.activity.NumberWinActivity">
 
         </activity>
+        <activity android:name="com.zgmao.activity.SettingActivity">
+
+        </activity>
     </application>
 
 </manifest>

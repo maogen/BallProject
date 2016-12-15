@@ -1,6 +1,7 @@
 package com.zgmao.application;
 
 import com.maf.application.BaseApplication;
+import com.zgmao.utils.RequestUtils;
 
 /**
  * 项目名称：BallInfoApplication
@@ -16,5 +17,6 @@ public class BallApplication extends BaseApplication {
     @Override
     public void onCreate() {
         super.onCreate();
+        RequestUtils.initUrl();
     }
 }

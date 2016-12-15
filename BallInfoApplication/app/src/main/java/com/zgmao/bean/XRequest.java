@@ -14,7 +14,7 @@ import com.maf.db.Entity;
  * 修改备注：
  */
 @Entity(table = "X_REQUEST")
-public class XRequest {
+public class XRequest{
     @Column(auto = true, pk = true)
     private Long id;
     @Column
@@ -65,5 +65,4 @@ public class XRequest {
     public void setResult(String result) {
         this.result = result;
     }
-
 }
