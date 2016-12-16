@@ -94,6 +94,12 @@ public class MainActivity extends BaseTitleActivity {
                 listPopup.dismiss();
             }
         });
+        List<XRequest> requestList = xRequestDao.getAllRequest();
+        if (requestList != null) {
+            for (XRequest item : requestList) {
+                LogUtils.d(GsonUtils.gsonToString(item));
+            }
+        }
     }
 
     @Override
@@ -239,7 +245,7 @@ public class MainActivity extends BaseTitleActivity {
                 LogUtils.d(result);
                 BaseToast.makeTextShort("请求数据失败");
                 // 获取数据库
-                XRequest xRequest = xRequestDao.getRequest(RequestUtils.url, RequestUtils.action_info, null);
+                XRequest xRequest = xRequestDao.getRequest(RequestUtils.action_info, null);
                 if (xRequest != null) {
                     ball = GsonUtils.stringToGson(xRequest.getResult(), new TypeToken<Ball>() {
                     });
@@ -280,7 +286,7 @@ public class MainActivity extends BaseTitleActivity {
                 LogUtils.d(result);
                 BaseToast.makeTextShort("请求数据失败");
                 // 获取数据库
-                XRequest xRequest = xRequestDao.getRequest(RequestUtils.url, RequestUtils.action_analysis, null);
+                XRequest xRequest = xRequestDao.getRequest(RequestUtils.action_analysis, null);
                 if (xRequest != null) {
                     AnalysisResult analysisResult = GsonUtils.stringToGson(xRequest.getResult(), new TypeToken<AnalysisResult>() {
                     });

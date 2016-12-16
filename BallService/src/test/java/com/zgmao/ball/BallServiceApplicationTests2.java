@@ -27,6 +27,14 @@ public class BallServiceApplicationTests2 {
 	 * 测试得到最近号码
 	 */
 	@Test
+	public void getBallByNumber() {
+		Lg.d(new Gson().toJson(controll.getHistoryByNumber(100)));
+	}
+
+	/**
+	 * 测试得到最近号码
+	 */
+	@Test
 	public void getBall() {
 		Lg.d(new Gson().toJson(controll.getBallNumber()));
 	}

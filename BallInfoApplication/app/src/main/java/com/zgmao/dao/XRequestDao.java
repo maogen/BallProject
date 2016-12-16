@@ -3,10 +3,13 @@ package com.zgmao.dao;
 import android.content.Context;
 
 import com.maf.db.DbHelper;
+import com.maf.db_demo.TableDemo;
 import com.maf.utils.LogUtils;
 import com.maf.utils.StringUtils;
 import com.zgmao.application.BallApplication;
 import com.zgmao.bean.XRequest;
+
+import java.util.List;
 
 
 /**
@@ -48,7 +51,7 @@ public class XRequestDao {
      * @return 主键
      */
     public String insertOrUpdate(XRequest vo) {
-        XRequest exitVo = getRequest(vo.getUrl(), vo.getAction(), vo.getBody());
+        XRequest exitVo = getRequest(vo.getAction(), vo.getBody());
         if (null == exitVo) {
             // 如果已经存在的数据为空，新的数据，插入
             db.save(vo);
@@ -62,6 +65,7 @@ public class XRequestDao {
             exitVo.setUrl(vo.getUrl());
             exitVo.setAction(vo.getAction());
             exitVo.setBody(vo.getBody());
+            exitVo.setResult(vo.getResult());
             db.update(exitVo);
             LogUtils.d("更新旧的请求缓存" + exitVo.toString());
         }
@@ -71,29 +75,34 @@ public class XRequestDao {
     /**
      * 根据条件查找保存的网络请求
      *
-     * @param url    请求地址
      * @param action 请求方法
      * @param body   请求参数
      * @return 结果
      */
-    public XRequest getRequest(String url, String action, String body) {
-        if (StringUtils.isEmpty(url)) {
-            return null;
-        }
+    public XRequest getRequest(String action, String body) {
         if (StringUtils.isEmpty(action)) {
             return null;
         }
         XRequest exitVo;
         if (StringUtils.isEmpty(body)) {
             StringBuffer sql = new StringBuffer();
-            sql.append(":url = ? and :action = ? ");
-            exitVo = db.queryFirst(XRequest.class, sql.toString(), url, action);
+            sql.append(":action = ? ");
+            exitVo = db.queryFirst(XRequest.class, sql.toString(), action);
         } else {
             StringBuffer sql = new StringBuffer();
-            sql.append(":url = ? and :action = ? and :body = ?");
-            exitVo = db.queryFirst(XRequest.class, sql.toString(), url, action, body);
+            sql.append("action = ? and :body = ?");
+            exitVo = db.queryFirst(XRequest.class, sql.toString(), action, body);
         }
         return exitVo;
+    }
+
+    /**
+     * 得到所有缓存
+     *
+     * @return
+     */
+    public List<XRequest> getAllRequest() {
+        return db.queryList(XRequest.class, "", "");
     }
 
     /**

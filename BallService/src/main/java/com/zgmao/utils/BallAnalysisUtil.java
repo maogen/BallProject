@@ -1,6 +1,7 @@
 package com.zgmao.utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -200,6 +201,85 @@ public class BallAnalysisUtil {
 	}
 
 	/**
+	 * 计算列表中红球出现的次数和连续未出现的次数
+	 * @param balls
+	 * @return
+	 */
+	public static NumberRate[] countRedBall(NumberRate[] redRates,
+			List<Ball> balls) {
+		// 循环遍历，处理数字
+		for (int i = 0; i < balls.size(); i++) {
+			Ball ball = balls.get(i);
+			List<Integer> redNumberList = ball.getRedNumber();
+			// 循环记录33个红球号码
+			for (int j = 0; j < redRates.length; j++) {
+				NumberRate itemRedRate = redRates[j];
+				if (BallAnalysisUtil.isExistRedBall(redNumberList,
+						itemRedRate.getNumber())) {
+					// 红球出现
+					itemRedRate.addContinueCount();
+					itemRedRate.setShow();
+
+					if (i < NumberRate.MAX_COUNT_RED) {
+						// 最近红球出现一次，记录
+						itemRedRate.addShowCount();
+					}
+
+				} else {
+					// 出现空白
+					// 红球没出现
+					itemRedRate.addDismissCount();
+					itemRedRate.setNotShow();
+				}
+			}
+		}
+		return redRates;
+	}
+
+	/**
+	 * 计算列表中蓝球出现的次数和连续未出现的次数
+	 * @param balls
+	 * @return
+	 */
+	public static NumberRate[] countBlueBall(NumberRate[] buleRates,
+			List<Ball> balls) {
+		// 保存蓝球出现个数
+		Map<Integer, Integer> blueMap = new HashMap<>();
+		// 循环遍历，处理数字
+		for (int i = 0; i < balls.size(); i++) {
+			Ball ball = balls.get(i);
+			// 得到红球号码和蓝球号码
+			int blueNumber = ball.getBlueNumber();
+			// 循环记录16个红球号码
+			for (int j = 0; j < buleRates.length; j++) {
+				NumberRate itemBlueRate = buleRates[j];
+				if (blueNumber == itemBlueRate.getNumber()) {
+					// 篮球出现
+					itemBlueRate.addContinueCount();
+					itemBlueRate.setShow();
+					if (i < NumberRate.MAX_COUNT_BLUE) {
+						// 最近篮球出现一次，记录
+						itemBlueRate.addShowCount();
+					}
+				} else {
+					itemBlueRate.addDismissCount();
+					itemBlueRate.setNotShow();
+				}
+			}
+			// 保存蓝球出现的个数
+			if (blueMap.containsKey(blueNumber)) {
+				int count = blueMap.get(ball.getBlueNumber());
+				count++;
+				blueMap.put(blueNumber, count);
+			} else {
+				blueMap.put(blueNumber, 1);
+			}
+		}
+		return buleRates;
+	}
+
+	/**
+	 * 分析红球出现的次数和未出现的次数
 	 * @param rateArray
 	 */
 	public static RecommendBall analysisRedBall(NumberRate[] rateArray) {
@@ -230,7 +310,7 @@ public class BallAnalysisUtil {
 				// 号码已经在强烈推荐列表中
 				continue;
 			}
-			if (item.getShowCount() >= 3) {
+			if (item.getShowCount() >= 4) {
 				// 号码最近20期出现频率高，不记录
 				continue;
 			}
@@ -249,6 +329,7 @@ public class BallAnalysisUtil {
 	}
 
 	/**
+	 * 分析蓝球出现次数和未出现次数
 	 * @param rateArray
 	 */
 	public static RecommendBall analysisBlueBall(NumberRate[] rateArray) {

@@ -1,9 +1,7 @@
 package com.zgmao.controller;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -267,6 +265,29 @@ public class BallController {
 	}
 
 	/**
+	 * 查看特定数目的数据
+	 * http://localhost:9001/api/ball/getHistoryByNumber
+	 * @return
+	 */
+	@GetMapping("/getHistoryByNumber")
+	public List<Ball> getHistoryByNumber(Integer number) {
+		// select * from history order by number desc limit 0,number;
+		List<TBall> tBalls = tBallDao
+				.findAllByOrderByNumberDesc(new PageRequest(0, number));
+		// List<TBall> tBalls = pageBalls.getContent();
+		List<Ball> ballList = new ArrayList<>();
+		if (tBalls != null) {
+			for (TBall tBall : tBalls) {
+				Ball item = BallAnalysisUtil.getViewByTableVo(tBall);
+				if (item != null) {
+					ballList.add(item);
+				}
+			}
+		}
+		return ballList;
+	}
+
+	/**
 	 * 将列表插入到数据库
 	 * 
 	 * @param ballList
@@ -323,73 +344,23 @@ public class BallController {
 		for (int i = 0; i < buleCount; i++) {
 			buleRates[i] = new NumberRate(i + 1, 1);
 		}
-		// 得到数据库数据
-		List<Ball> balls = getHistoryByDB();
-		if (balls == null) {
+		// 得到近20期的红球号码
+		List<Ball> redBalls = getHistoryByNumber(NumberRate.MAX_COUNT_RED);
+		if (redBalls == null) {
 			throw new Exception("数据库双色球数据为空");
 		}
-		if (balls.size() > 0) {
-			// 下一期
+		if (redBalls.size() > 0) {
+			// 得到下一期的期号
 			try {
 				lastNumber = String.valueOf(
-						Integer.valueOf(balls.get(0).getBallNumber()) + 1);
+						Integer.valueOf(redBalls.get(0).getBallNumber()) + 1);
 			} catch (Exception e) {
 			}
 		}
-		// 保存蓝球出现个数
-		Map<Integer, Integer> blueMap = new HashMap<>();
-		// 循环遍历，处理数字
-		for (int i = 0; i < balls.size(); i++) {
-			Ball ball = balls.get(i);
-			// 得到红球号码和蓝球号码
-			int blueNumber = ball.getBlueNumber();
-			List<Integer> redNumberList = ball.getRedNumber();
-			// 循环记录33个红球号码
-			for (int j = 0; j < redRates.length; j++) {
-				NumberRate itemRedRate = redRates[j];
-				if (BallAnalysisUtil.isExistRedBall(redNumberList,
-						itemRedRate.getNumber())) {
-					// 红球出现
-					itemRedRate.addContinueCount();
-					itemRedRate.setShow();
-
-					if (i < NumberRate.MAX_COUNT_RED) {
-						// 最近红球出现一次，记录
-						itemRedRate.addShowCount();
-					}
-
-				} else {
-					// 出现空白
-					// 红球没出现
-					itemRedRate.addDismissCount();
-					itemRedRate.setNotShow();
-				}
-			}
-			// 循环记录16个红球号码
-			for (int j = 0; j < buleRates.length; j++) {
-				NumberRate itemBlueRate = buleRates[j];
-				if (blueNumber == itemBlueRate.getNumber()) {
-					// 篮球出现
-					itemBlueRate.addContinueCount();
-					itemBlueRate.setShow();
-					if (i < NumberRate.MAX_COUNT_BLUE) {
-						// 最近篮球出现一次，记录
-						itemBlueRate.addShowCount();
-					}
-				} else {
-					itemBlueRate.addDismissCount();
-					itemBlueRate.setNotShow();
-				}
-			}
-			// 保存蓝球出现的个数
-			if (blueMap.containsKey(blueNumber)) {
-				int count = blueMap.get(ball.getBlueNumber());
-				count++;
-				blueMap.put(blueNumber, count);
-			} else {
-				blueMap.put(blueNumber, 1);
-			}
-		}
+		 BallAnalysisUtil.countRedBall(redRates, redBalls);
+		// 得到近100期的红球号码
+		List<Ball> blueBalls = getHistoryByNumber(NumberRate.MAX_COUNT_BLUE);
+		BallAnalysisUtil.countRedBall(buleRates, blueBalls);
 		// BallAnalysisUtil.printBlue(blueMap);
 		// 排序，打印结果
 		BallAnalysisUtil.sortNumber(redRates);
