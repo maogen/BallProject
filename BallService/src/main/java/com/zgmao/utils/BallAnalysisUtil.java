@@ -289,12 +289,12 @@ public class BallAnalysisUtil {
 		// 强烈推荐下次必选
 		List<NumberRate> mustNumberList = new ArrayList<>();
 		for (NumberRate item : rateArray) {
-			if (item.getDismissCount() >= 20) {
+			if (item.getDismissCount() >= 15) {
 				// 如果某个号码连续未出现XX次
 				mustNumberList.add(item);
 			}
-			if (item.getShowCount() <= 1) {
-				// 如果某个号码近期仅出现1次
+			if (item.getShowCount() <= 0) {
+				// 如果某个号码近期未出现
 				mustNumberList.add(item);
 			}
 		}

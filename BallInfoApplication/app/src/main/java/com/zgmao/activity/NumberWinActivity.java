@@ -158,6 +158,7 @@ public class NumberWinActivity extends BaseTitleActivity {
      * @param ball
      */
     private void request(Ball ball) {
+        textMsg.setText("");
         DialogUtil.showProgressDialog(this);
         RequestUtils.getAnalysisWin(new XAPIServiceListener() {
             @Override

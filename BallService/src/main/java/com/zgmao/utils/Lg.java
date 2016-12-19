@@ -9,6 +9,8 @@ package com.zgmao.utils;
 public class Lg {
 	// 是否打印消息
 	private static boolean isLog = true;
+	// 是否保存log到文件
+	private static boolean isFileLog = false;
 
 	/**
 	 * 打印消息
@@ -18,6 +20,8 @@ public class Lg {
 	public static void d(String msg) {
 		if (isLog) {
 			System.out.println(msg);
+		}
+		if (isFileLog) {
 			FileUtils.writeLog(msg);
 		}
 	}
@@ -25,6 +29,8 @@ public class Lg {
 	public static void write(String msg) {
 		if (isLog) {
 			System.out.println(msg);
+		}
+		if (isFileLog) {
 			FileUtils.writeLog(msg);
 		}
 	}
@@ -32,9 +38,10 @@ public class Lg {
 	public static void writeError(String msg) {
 		if (isLog) {
 			System.out.println(msg);
+		}
+		if (isFileLog) {
 			// log写到文件中
 			FileUtils.writeCrashLog(msg);
 		}
-
 	}
 }
