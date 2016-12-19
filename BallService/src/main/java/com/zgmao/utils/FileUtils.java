@@ -207,8 +207,4 @@ public class FileUtils {
 		}
 		file.delete();
 	}
-
-	public static void main(String[] args) {
-		System.out.println(FileUtils.class.getResource(""));
-	}
 }

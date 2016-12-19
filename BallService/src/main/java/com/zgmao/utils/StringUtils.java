@@ -113,12 +113,4 @@ public class StringUtils {
 		return Integer.valueOf(string);
 	}
 
-	public static void main(String[] args) {
-		System.out.println(randomUid());
-		System.out.println(isNumber("-123"));
-		System.out.println(isNumber("avd"));
-		System.out.println(isNumber("1a1vd"));
-		System.out.println(isNumber(""));
-		System.out.println(string2Number(""));
-	}
 }

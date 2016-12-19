@@ -84,8 +84,4 @@ public class DateUtils {
 		Date date = getDateByFormatDate(dateString, originalFormat);
 		return getDateByFormat(date, purposeFormat);
 	}
-
-	public static void main(String[] args) {
-		System.out.println(getDateByFormat("yyyy-MM-dd HH:mm:ss SSS"));
-	}
 }

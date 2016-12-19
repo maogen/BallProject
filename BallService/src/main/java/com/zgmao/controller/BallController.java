@@ -357,10 +357,10 @@ public class BallController {
 			} catch (Exception e) {
 			}
 		}
-		 BallAnalysisUtil.countRedBall(redRates, redBalls);
+		redRates = BallAnalysisUtil.countRedBall(redRates, redBalls);
 		// 得到近100期的红球号码
 		List<Ball> blueBalls = getHistoryByNumber(NumberRate.MAX_COUNT_BLUE);
-		BallAnalysisUtil.countRedBall(buleRates, blueBalls);
+		buleRates = BallAnalysisUtil.countBlueBall(buleRates, blueBalls);
 		// BallAnalysisUtil.printBlue(blueMap);
 		// 排序，打印结果
 		BallAnalysisUtil.sortNumber(redRates);

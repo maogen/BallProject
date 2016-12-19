@@ -8,9 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.google.gson.Gson;
 import com.zgmao.controller.BallController;
 import com.zgmao.utils.Lg;
 import com.zgmao.vo.AnalysisResult;
+import com.zgmao.vo.Ball;
 import com.zgmao.vo.NumberRate;
 import com.zgmao.vo.RecommendBall;
 
@@ -20,6 +22,63 @@ public class BallServiceApplicationTests {
 
 	@Autowired
 	private BallController controll;
+
+	/**
+	 * 测试得到最近号码
+	 */
+	@Test
+	public void getBallByNumber() {
+		Lg.d(new Gson().toJson(controll.getHistoryByNumber(100)));
+	}
+
+	/**
+	 * 测试得到最近号码
+	 */
+	@Test
+	public void getBall() {
+		Lg.d(new Gson().toJson(controll.getBallNumber()));
+	}
+
+	/**
+	 * 测试获奖信息
+	 */
+	@Test
+	public void getWin() {
+		Ball ball = new Ball();
+		ball.addRedNumber(3);
+		ball.addRedNumber(11);
+		ball.addRedNumber(14);
+		ball.addRedNumber(22);
+		ball.addRedNumber(23);
+		ball.addRedNumber(31);
+
+		ball.setBlueNumber(5);
+		Lg.d(controll.analyseWinMsg(ball));
+	}
+
+	@Test
+	public void getHistoryByPage() {
+		List<Ball> balls = controll.getHistoryByPage(1);
+		if (balls != null) {
+			for (Ball ball : balls) {
+				Lg.d(ball.getBallDate());
+			}
+		}
+		Lg.d("==============");
+		List<Ball> balls2 = controll.getHistoryByPage(2);
+		if (balls2 != null) {
+			for (Ball ball : balls2) {
+				Lg.d(ball.getBallDate());
+			}
+		}
+		Lg.d("==============");
+		List<Ball> balls3 = controll.getHistoryByPage(3);
+		if (balls3 != null) {
+			for (Ball ball : balls3) {
+				Lg.d(ball.getBallDate());
+			}
+		}
+	}
 
 	@Test
 	public void contextLoads() {
