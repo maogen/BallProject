@@ -1,7 +1,15 @@
 package com.zgmao.ball;
 
+import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.List;
 
+import org.apache.http.Header;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpHead;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -118,6 +126,50 @@ public class BallServiceApplicationTests {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Test
+	public void headRequest() throws ClientProtocolException, IOException {
+		int fileSize = 0;
+
+		String url = "https://v0.api.upyun.com/ytbtest";
+		String image_url = "/2016/09/d3533af7-9bae-437a-866a-bbc5fb975007.JPG";
+		String token = "Basic aW5mbzpUcEZxamthaTNKOUE5SkRvYytOd1c2N01QcWtNZlNCQk1MQlo4ZnJnSGtBPQ==";
+
+		CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+		HttpHead httpHead = new HttpHead(url + image_url);
+		httpHead.addHeader("Authorization", token);
+		CloseableHttpResponse httpResponse = null;
+		httpResponse = httpClient.execute(httpHead);
+		Header[] headers = httpResponse.getAllHeaders();
+		if (headers != null) {
+			int length = headers.length;
+			for (int i = 0; i < length; i++) {
+				Header header = headers[i];
+				System.out.println(header.getName() + ":" + header.getValue());
+				if ("x-upyun-file-size".equals(header.getName())) {
+					fileSize = Integer.valueOf(header.getValue());
+				}
+			}
+		}
+		httpResponse.close();
+		httpClient.close();
+		fileSize = (int) (1024);
+		if (fileSize >= (1024 * 1024)) {
+			// 图片大小大于1M
+			double size = fileSize / 1024.0 / 1024.0;
+			String numStr = new DecimalFormat("#").format(size);
+			System.out.println(numStr + "M");
+		} else if (fileSize >= 1024) {
+			// 图片大于1KB
+			double size = fileSize / 1024.0;
+			String numStr = new DecimalFormat("#").format(size);
+			System.out.println(numStr + "K");
+		} else {
+			// 图片
+			System.out.println(fileSize + "B");
+		}
+
 	}
 
 }
