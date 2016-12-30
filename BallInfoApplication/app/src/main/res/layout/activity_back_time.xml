@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/layout_titlebar_back" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/BallMsgTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="0dp"
+            android:text="当前能量:" />
+
+        <EditText
+            android:id="@+id/edit_now_energy"
+            style="@style/EditStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="0dp"
+            android:layout_weight="1"
+            android:digits="0123456789"
+            android:maxEms="10"
+            android:text="5445" />
+
+        <TextView
+            android:id="@+id/text_edit_energy"
+            style="@style/BaseBtnBlueWidthStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dp"
+            android:layout_marginTop="0dp"
+            android:padding="5dp"
+            android:text="编辑" />
+    </LinearLayout>
+
+
+    <TextView
+        style="@style/BallMsgTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="倒计时" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/text_back_time"
+            style="@style/BallMsgTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="0dp"
+            android:text="0"
+            android:textColor="@color/titlebar_background"
+            android:textSize="48dp" />
+
+        <TextView
+            style="@style/BallMsgTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:text="天" />
+    </LinearLayout>
+</LinearLayout>

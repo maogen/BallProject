@@ -31,7 +31,7 @@ import zgmao.com.ballinfo.R;
  * 修改备注：
  */
 
-public class NumberWinActivity extends BaseTitleActivity {
+public class NumberWinActivity extends BaseTitleSwipeActivity {
     private int[] editIds = {R.id.edit_input_1, R.id.edit_input_2,
             R.id.edit_input_3, R.id.edit_input_4,
             R.id.edit_input_5, R.id.edit_input_6,

@@ -30,7 +30,7 @@ import zgmao.com.ballinfo.R;
  * 修改备注：
  */
 
-public class HistoryActivity extends BaseTitleActivity {
+public class HistoryActivity extends BaseTitleSwipeActivity {
     private RecyclerView recyclerHistory;
     private HistoryBallAdapter adapter;
     private List<Ball> ballList;

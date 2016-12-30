@@ -28,6 +28,7 @@
         <activity android:name="com.zgmao.activity.SettingActivity">
 
         </activity>
+        <activity android:name="com.zgmao.activity.BackTimeActivity"></activity>
     </application>
 
 </manifest>

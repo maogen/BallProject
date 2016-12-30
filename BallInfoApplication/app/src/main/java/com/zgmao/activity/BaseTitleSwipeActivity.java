@@ -17,7 +17,7 @@ import zgmao.com.ballinfo.R;
  * 修改备注：
  */
 
-public abstract class BaseTitleActivity extends BaseCustomSwipeRefreshActivity {
+public abstract class BaseTitleSwipeActivity extends BaseCustomSwipeRefreshActivity {
     protected TitleBarView titleBarView;
 
     @Override

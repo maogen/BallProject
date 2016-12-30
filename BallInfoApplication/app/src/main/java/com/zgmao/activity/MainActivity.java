@@ -29,7 +29,7 @@ import java.util.List;
 
 import zgmao.com.ballinfo.R;
 
-public class MainActivity extends BaseTitleActivity {
+public class MainActivity extends BaseTitleSwipeActivity {
     private LinearLayout viewInfo;// 初始化时，隐藏控件
     private TextView textBallDate;// 显示日期
     private RecyclerView recyclerView;// 显示红球
@@ -77,7 +77,7 @@ public class MainActivity extends BaseTitleActivity {
 
         xRequestDao = new XRequestDao(this);
         listPopup = new BaseListPopup(this);
-        String[] menus = new String[]{"查看历史", "是否中奖", "设置"};
+        String[] menus = new String[]{"查看历史", "是否中奖", "设置", "倒计时"};
         listPopup.setMenu(menus, null, new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -90,6 +90,9 @@ public class MainActivity extends BaseTitleActivity {
                 } else if (i == 2) {
                     // 设置
                     startActivity(SettingActivity.class);
+                } else if (i == 3) {
+                    // 倒计时
+                    startActivity(BackTimeActivity.class);
                 }
                 listPopup.dismiss();
             }
