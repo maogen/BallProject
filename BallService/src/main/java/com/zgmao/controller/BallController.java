@@ -467,4 +467,45 @@ public class BallController {
 		Ball oriBall = getBallNumber();
 		return BallAnalysisUtil.analyseWin(oriBall, ball);
 	}
+
+	/**
+	 * 计算所有球出现的次数
+	 */
+	@PostMapping("countBall")
+	public String countBall() {
+		// 数据库查询历史号码
+		List<TBall> tBalls = (List<TBall>) tBallDao
+				.findAllByOrderByNumberDesc();
+		// 把历史号码转成可解析的数据结构
+		List<Ball> ballList = new ArrayList<>();
+		if (tBalls != null) {
+			for (TBall tBall : tBalls) {
+				Ball item = BallAnalysisUtil.getViewByTableVo(tBall);
+				if (item != null) {
+					ballList.add(item);
+				}
+			}
+		}
+		// 所有号码实体类
+		int redCount = 33;
+		NumberRate[] redRates = new NumberRate[redCount];
+		for (int i = 0; i < redCount; i++) {
+			redRates[i] = new NumberRate(i + 1, 0);
+		}
+		// 循环遍历号码
+		for (Ball ball : ballList) {
+			List<Integer> redNumberList = ball.getRedNumber();
+			for (Integer number : redNumberList) {
+				redRates[number - 1].addShowCount();
+			}
+		}
+		StringBuilder sb = new StringBuilder();
+		// 打印所有号码出现的次数
+		for (NumberRate rate : redRates) {
+			Lg.d("号码" + rate.getNumber() + "出现" + rate.getShowCount() + "次");
+			sb.append("号码").append(rate.getNumber()).append("出现")
+					.append(rate.getShowCount()).append("次").append("\n");
+		}
+		return sb.toString();
+	}
 }

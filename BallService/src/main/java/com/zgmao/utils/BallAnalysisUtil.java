@@ -292,8 +292,7 @@ public class BallAnalysisUtil {
 			if (item.getDismissCount() >= 15) {
 				// 如果某个号码连续未出现XX次
 				mustNumberList.add(item);
-			}
-			if (item.getShowCount() <= 0) {
+			} else if (item.getShowCount() <= 0) {
 				// 如果某个号码近期未出现
 				mustNumberList.add(item);
 			}
@@ -342,8 +341,7 @@ public class BallAnalysisUtil {
 			if (item.getDismissCount() >= 50) {
 				// 如果某个号码连续未出现XX次
 				mustNumberList.add(item);
-			}
-			if (item.getShowCount() <= 2) {
+			} else if (item.getShowCount() <= 2) {
 				// 如果某个号码近期仅出现XX次
 				mustNumberList.add(item);
 			}

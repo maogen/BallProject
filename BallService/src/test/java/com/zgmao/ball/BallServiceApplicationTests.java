@@ -172,4 +172,8 @@ public class BallServiceApplicationTests {
 
 	}
 
+	@Test
+	public void testCount() {
+		controll.countBall();
+	}
 }
