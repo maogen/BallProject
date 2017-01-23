@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -507,5 +508,17 @@ public class BallController {
 					.append(rate.getShowCount()).append("次").append("\n");
 		}
 		return sb.toString();
+	}
+
+	@GetMapping("getHistoryByStart")
+	public void getHistoryByStart(int start, int number) {
+		// List<TBall> tBalls = tBallDao.findAllByOrderByNumberDescLimit(start,
+		// number);
+		PageRequest pageRequest = new PageRequest(start, number, Direction.DESC,
+				"number");
+		List<TBall> tBalls = tBallDao.findAllByOrderByNumberDesc(pageRequest);
+		for (TBall tBall : tBalls) {
+			Lg.d(tBall.getNumber());
+		}
 	}
 }

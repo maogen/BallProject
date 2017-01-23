@@ -174,6 +174,7 @@ public class BallServiceApplicationTests {
 
 	@Test
 	public void testCount() {
-		controll.countBall();
+		// controll.countBall();
+		controll.getHistoryByStart(1, 100);
 	}
 }
