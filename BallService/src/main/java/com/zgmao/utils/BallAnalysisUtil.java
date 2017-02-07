@@ -371,6 +371,46 @@ public class BallAnalysisUtil {
 	}
 
 	/**
+	 * 分析蓝号出现7次，下次出现的概率大
+	 * @param rateArray
+	 */
+	public static RecommendBall analysisBlueBallTwo(NumberRate[] rateArray) {
+		if (rateArray == null) {
+			return null;
+		}
+		List<NumberRate> needNumberList = new ArrayList<>();
+		// 强烈推荐之后，剩下的号码，由按照未出现次数排序，未出现次数越大，下次号码出现次数大
+		sortNumber(rateArray);
+		// 近100期该号码出现7次，则推荐该号码
+		for (NumberRate item : rateArray) {
+			if (needNumberList.size() >= 3) {
+				// 蓝色号码，仅推荐3个
+				break;
+			}
+			if (item.getShowCount() == 7) {
+				needNumberList.add(item);
+			}
+		}
+		// 如果近100期出现7次的号码，没有凑够3个，则按照顺序补充
+		if (needNumberList.size() < 3) {
+			for (NumberRate item : rateArray) {
+				if (needNumberList.size() >= 3) {
+					// 蓝色号码，仅推荐5个
+					break;
+				}
+				if (isInList(item, needNumberList)) {
+					// 号码已经在列表中
+					continue;
+				}
+				needNumberList.add(item);
+			}
+		}
+		RecommendBall recBall = new RecommendBall();
+		recBall.setNeedNumberList(needNumberList);
+		return recBall;
+	}
+
+	/**
 	 * 某个元素是否在列表中
 	 * @param bean
 	 * @param list

@@ -322,17 +322,12 @@ public class BallController {
 	}
 
 	/**
-	 * 出现总次数 	16 	15 	23 	13 	15 	23 	14 	20 	18 	16 	15 	25 	17 	19 	18 	14 	19 	21 	22 	24 	15 	21 	16 	15 	18 	23 	22 	18 	19 	15 	17 	23 	11 	10 	5 	7 	10 	4 	3 	5 	5 	8 	5 	6 	7 	4 	6 	5 	10
-	 * 平均遗漏值 	5 	6 	3 	5 	5 	3 	5 	4 	3 	4 	6 	3 	5 	4 	4 	7 	4 	3 	3 	4 	6 	3 	4 	5 	4 	3 	5 	3 	4 	6 	4 	2 	9 	7 	12 	20 	5 	13 	25 	14 	12 	8 	12 	12 	7 	16 	9 	15 	8
-	 * 最大遗漏值 	22 	24 	10 	17 	22 	11 	17 	14 	15 	13 	25 	16 	22 	17 	15 	25 	15 	13 	15 	22 	20 	14 	15 	18 	15 	11 	23 	11 	13 	25 	14 	8 	36 	21 	37 	60 	16 	37 	63 	37 	31 	20 	29 	33 	22 	44 	32 	40 	32
-	 * 最大连出值 	2 	2 	3 	2 	3 	2 	2 	3 	2 	2 	2 	3 	3 	3 	2 	3 	3 	3 	2 	4 	2 	2 	2 	2 	2 	2 	3 	3 	2 	4 	2 	2 	2 	2 	2 	1 	1 	1 	2 	2 	2 	2 	1 	2 	1 	1 	1 	3 	1
-	            1 	2 	3 	4 	5 	6 	7 	8 	9 	10 	11 	12 	13 	14 	15 	16 	17 	18 	19 	20 	21 	22 	23 	24 	25 	26 	27 	28 	29 	30 	31 	32 	33 	1 	2 	3 	4 	5 	6 	7 	8 	9 	10 	11 	12 	13 	14 	15 	16
-	 * 分析
+	 * 分析1：根据连续为出现次数排序，连续为出现次数越高，下次出现的概率大
 	 * http:localhost:9001/api/ball/analysis
 	 * @throws Exception 
 	 */
-	@GetMapping("/analysis")
-	public AnalysisResult analysis() throws Exception {
+	@GetMapping("/analysisOne")
+	public AnalysisResult analysis() {
 		String lastNumber = "";// 下一期期号
 		// 初始化红球数组
 		int redCount = 33;
@@ -347,9 +342,6 @@ public class BallController {
 		}
 		// 得到近20期的红球号码
 		List<Ball> redBalls = getHistoryByNumber(NumberRate.MAX_COUNT_RED);
-		if (redBalls == null) {
-			throw new Exception("数据库双色球数据为空");
-		}
 		if (redBalls.size() > 0) {
 			// 得到下一期的期号
 			try {
@@ -377,6 +369,112 @@ public class BallController {
 		recommendBall.setNextNumber(lastNumber);
 
 		saveAnalysis(recommendBall);
+		return recommendBall;
+	}
+
+	/**
+	 * 分析2：先根据连续为出现次数排序，然后查找近100期该号码出现的次数。蓝号出现7次，下次出现的概率大
+	 * http:localhost:9001/api/ball/analysis
+	 * @throws Exception 
+	 */
+	@GetMapping("/analysis")
+	public AnalysisResult analysisTwo() {
+		String lastNumber = "";// 下一期期号
+		// 初始化红球数组
+		int redCount = 33;
+		int buleCount = 16;
+		NumberRate[] redRates = new NumberRate[redCount];
+		NumberRate[] buleRates = new NumberRate[buleCount];
+		for (int i = 0; i < redCount; i++) {
+			redRates[i] = new NumberRate(i + 1, 0);
+		}
+		for (int i = 0; i < buleCount; i++) {
+			buleRates[i] = new NumberRate(i + 1, 1);
+		}
+		// 得到近20期的红球号码
+		List<Ball> redBalls = getHistoryByNumber(NumberRate.MAX_COUNT_RED);
+		if (redBalls.size() > 0) {
+			// 得到下一期的期号
+			try {
+				lastNumber = String.valueOf(
+						Integer.valueOf(redBalls.get(0).getBallNumber()) + 1);
+			} catch (Exception e) {
+			}
+		}
+		redRates = BallAnalysisUtil.countRedBall(redRates, redBalls);
+		// 得到近100期的红球号码
+		List<Ball> blueBalls = getHistoryByNumber(NumberRate.MAX_COUNT_BLUE);
+		buleRates = BallAnalysisUtil.countBlueBall(buleRates, blueBalls);
+		// BallAnalysisUtil.printBlue(blueMap);
+		// 排序，打印结果
+		BallAnalysisUtil.sortNumber(redRates);
+		BallAnalysisUtil.printNumberRate(redRates, 0);
+		BallAnalysisUtil.sortNumber(buleRates);
+		BallAnalysisUtil.printNumberRate(buleRates, 1);
+		// 设置结果
+		AnalysisResult recommendBall = new AnalysisResult();
+		RecommendBall redBall = BallAnalysisUtil.analysisRedBall(redRates);
+		recommendBall.setRedBall(redBall);
+		RecommendBall blueBall = BallAnalysisUtil
+				.analysisBlueBallTwo(buleRates);
+		recommendBall.setBlueBall(blueBall);
+		recommendBall.setNextNumber(lastNumber);
+
+		saveAnalysis(recommendBall);
+		return recommendBall;
+	}
+
+	@GetMapping("/analysisTest")
+	public AnalysisResult analysisTest(int preformNum) {
+		Lg.d("测试第" + preformNum + "期之前");
+		String lastNumber = "";// 下一期期号
+		// 初始化红球数组
+		int redCount = 33;
+		int buleCount = 16;
+		NumberRate[] redRates = new NumberRate[redCount];
+		NumberRate[] buleRates = new NumberRate[buleCount];
+		for (int i = 0; i < redCount; i++) {
+			redRates[i] = new NumberRate(i + 1, 0);
+		}
+		for (int i = 0; i < buleCount; i++) {
+			buleRates[i] = new NumberRate(i + 1, 1);
+		}
+		// 得到近20期的红球号码
+		List<Ball> redBalls = getHistoryByNumber(
+				NumberRate.MAX_COUNT_RED + preformNum);
+		for (int i = 0; i < preformNum; i++) {
+			redBalls.remove(0);
+		}
+		if (redBalls.size() > 0) {
+			// 得到下一期的期号
+			try {
+				lastNumber = String.valueOf(
+						Integer.valueOf(redBalls.get(0).getBallNumber()) + 1);
+			} catch (Exception e) {
+			}
+		}
+		redRates = BallAnalysisUtil.countRedBall(redRates, redBalls);
+		// 得到近100期的红球号码
+		// List<Ball> blueBalls = getHistoryByNumber(NumberRate.MAX_COUNT_BLUE);
+		List<Ball> blueBalls = getHistoryByNumber(
+				NumberRate.MAX_COUNT_BLUE + preformNum);
+		for (int i = 0; i < preformNum; i++) {
+			blueBalls.remove(0);
+		}
+		buleRates = BallAnalysisUtil.countBlueBall(buleRates, blueBalls);
+		// BallAnalysisUtil.printBlue(blueMap);
+		// 排序，打印结果
+		BallAnalysisUtil.sortNumber(redRates);
+		// BallAnalysisUtil.printNumberRate(redRates, 0);
+		BallAnalysisUtil.sortNumber(buleRates);
+		BallAnalysisUtil.printNumberRate(buleRates, 1);
+		// 设置结果
+		AnalysisResult recommendBall = new AnalysisResult();
+		RecommendBall redBall = BallAnalysisUtil.analysisRedBall(redRates);
+		recommendBall.setRedBall(redBall);
+		RecommendBall blueBall = BallAnalysisUtil.analysisBlueBall(buleRates);
+		recommendBall.setBlueBall(blueBall);
+		recommendBall.setNextNumber(lastNumber);
 		return recommendBall;
 	}
 

@@ -40,6 +40,14 @@ public class BallServiceApplicationTests {
 	}
 
 	/**
+	 * 获取近一百期的历史
+	 */
+	@Test
+	public void getHistory() {
+		controll.insertHistoryBall();
+	}
+
+	/**
 	 * 测试得到最近号码
 	 */
 	@Test
@@ -176,5 +184,13 @@ public class BallServiceApplicationTests {
 	public void testCount() {
 		// controll.countBall();
 		controll.getHistoryByStart(1, 100);
+	}
+
+	@Test
+	public void testAnalysisTest() {
+		for (int i = 1; i <= 20; i++) {
+			controll.analysisTest(i);
+		}
+
 	}
 }
