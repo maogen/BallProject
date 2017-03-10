@@ -465,9 +465,9 @@ public class BallController {
 		// BallAnalysisUtil.printBlue(blueMap);
 		// 排序，打印结果
 		BallAnalysisUtil.sortNumber(redRates);
-		// BallAnalysisUtil.printNumberRate(redRates, 0);
+		BallAnalysisUtil.printNumberRate(redRates, 0);
 		BallAnalysisUtil.sortNumber(buleRates);
-		BallAnalysisUtil.printNumberRate(buleRates, 1);
+		// BallAnalysisUtil.printNumberRate(buleRates, 1);
 		// 设置结果
 		AnalysisResult recommendBall = new AnalysisResult();
 		RecommendBall redBall = BallAnalysisUtil.analysisRedBall(redRates);

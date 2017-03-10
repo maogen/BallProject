@@ -183,7 +183,9 @@ public class BallServiceApplicationTests {
 	@Test
 	public void testCount() {
 		// controll.countBall();
-		controll.getHistoryByStart(1, 100);
+//		controll.getHistoryByStart(1, 100);
+		int number = 0xC;
+		System.out.println(number);
 	}
 
 	@Test
